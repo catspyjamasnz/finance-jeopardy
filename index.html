@@ -173,6 +173,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .hint-btn{background:rgba(250,200,0,.12);border:1px solid rgba(250,200,0,.3);color:var(--gold-light);border-radius:8px;padding:10px 16px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;transition:transform .12s,filter .12s,opacity .15s;}
 .hint-btn:hover{transform:translateY(-1px);}
 .hint-btn.used{opacity:.35;cursor:default;transform:none;}
+.step-block{margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);}
+.step-label{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:3px;color:var(--gold);margin-bottom:6px;}
+.step-sub{font-size:13px;color:var(--silver);line-height:1.5;margin-bottom:16px;}
+.starter-q{margin-bottom:18px;}
+.starter-q:last-child{margin-bottom:0;}
+.starter-q-text{font-size:15px;color:var(--white);line-height:1.5;margin-bottom:8px;font-weight:600;}
+.starter-q textarea,.recommendation-box textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 14px;color:var(--white);font-size:15px;font-family:inherit;resize:vertical;line-height:1.4;}
+.starter-q textarea::placeholder,.recommendation-box textarea::placeholder{color:var(--silver);}
+.starter-q textarea:focus,.recommendation-box textarea:focus{outline:none;border-color:var(--rmit-azure);}
 /* ─── TEAM THOUGHTS ─── */
 .thoughts-section{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);}
 .thoughts-label{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:3px;color:var(--rmit-azure);margin-bottom:6px;}
@@ -206,6 +215,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   .scenario-actions .btn{width:100%}
   .thought-input-row textarea{padding:14px 16px;font-size:16px;}
   .thought-input-row button{width:100%;align-self:stretch;}
+  .starter-q textarea,.recommendation-box textarea{padding:14px 16px;font-size:16px;}
 }
 </style>
 </head>
@@ -317,16 +327,24 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="scenario-team-badge" id="scTeamBadge"></div>
     <div class="scenario-title" id="scTitle"></div>
     <div class="scenario-text" id="scText"></div>
-    <div class="scenario-prompt" id="scPrompt"></div>
-    <div class="hint-label">STUCK? TAP A STARTER</div>
-    <div class="hint-buttons" id="hintButtons"></div>
-    <div class="hint-box" id="scHintBox"></div>
+    <div class="step-block">
+      <div class="step-label">STEP 1 · FIRST 5 MINUTES</div>
+      <div class="step-sub">Work through these three questions as a team. Type your answer under each one.</div>
+      <div id="starterQuestions"></div>
+    </div>
+    <div class="step-block">
+      <div class="step-label">STEP 2 · NEXT 5 MINUTES</div>
+      <div class="step-sub">Now frame your recommendation. What would you tell the Finance team to do, and why?</div>
+      <div class="recommendation-box">
+        <textarea id="recommendationInput" rows="4" placeholder="Our recommendation to Finance is…" oninput="queueSaveAnswers()" onblur="saveAnswers()"></textarea>
+      </div>
+    </div>
     <div class="thoughts-section">
       <div class="thoughts-label-row">
-        <div class="thoughts-label">TEAM THOUGHTS — SCRIBE NOTES</div>
+        <div class="thoughts-label">OTHER NOTES — ANYTHING ELSE WORTH CAPTURING</div>
         <a class="thoughts-clear" onclick="clearTeamThoughts()">Clear our notes</a>
       </div>
-      <p class="thoughts-help">Capture things as you go — don't wait until the end. Jot down each idea, question or decision as it comes up, one at a time. You can present straight from this list — and delete anything you change your mind on.</p>
+      <p class="thoughts-help">Use this space for anything extra that comes up — side points, questions, or things to flag in the debrief.</p>
       <div class="thought-input-row">
         <textarea id="thoughtInput" placeholder="Type a thought, then tap Add…" rows="3" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addThought();}"></textarea>
         <button class="btn btn-correct" onclick="addThought()">ADD</button>
@@ -394,53 +412,53 @@ const TEAMS = [
 // ── CATEGORIES & CLUES ──────────────────────────────────────────────────────
 const CATEGORIES = [
   {
-    name:"P&L\nBasics",
+    name:"Our\nBusiness",
     questions:[
-      { points:200,  q:"Revenue minus the direct cost of producing your goods or services.", a:"What is Gross Profit?", note:"Formula: Revenue minus COGS. Gross Profit Margin = Gross Profit ÷ Revenue." },
-      { points:400,  q:"The P&L metric that strips out salaries, rent and marketing — but adds back interest, tax, depreciation and amortisation.", a:"What is EBITDA?", note:"Earnings Before Interest, Tax, Depreciation and Amortisation. Standard in valuations and M&A." },
-      { points:600,  q:"Operating Profit divided by Revenue — it shrank when your costs rose 15% but revenue stayed flat.", a:"What is Operating Margin?", note:"Also accept: margin compression. When this falls, the business keeps less of every dollar it earns." },
-      { points:800,  q:"A company can show a healthy one of these yet still run out of cash if customers haven't paid their invoices.", a:"What is Profit? (Or: What is a P&L?)", note:"Profit ≠ cash. Businesses die from cashflow failure, not P&L failure." },
-      { points:1000, q:"Assets equal Liabilities plus Equity — that's why this statement is named what it is.", a:"What is a Balance Sheet?", note:"Also: Statement of Financial Position. P&L = performance. Balance Sheet = position." },
+      { points:200,  q:"The top line that every team's budget is built around, and the number that drops when a cohort comes in below target.", a:"What is revenue?", note:"Revenue is the starting point for every financial conversation at RMIT UP. When enrolments are strong, revenue is strong. When a subscription is cancelled, Informit revenue is impacted." },
+      { points:400,  q:"Finance and the university track the revenue generated over the 3 years of the degree from our students who articulate.", a:"What is lifetime value?", note:"This is our core promise to RMIT University. When progression rates are strong, our relationship with the university is strong. When they drop, financial questions follow quickly." },
+      { points:600,  q:"An RMIT UP English language class is timetabled for 20 students. Only 14 enrol. The teachers, classrooms and materials are already paid for. Finance calls the cost of those 6 empty seats this — because the expense exists whether or not students fill the places.", a:"What is a fixed cost?", note:"This is why intake numbers matter so much to finance. We pay for teachers, rooms and resources regardless of how full the class is. Running programs below planned numbers is expensive — even if no one notices on the surface." },
+      { points:800,  q:"Unlike ELICOS programs which earn revenue from student enrolments, Informit earns its revenue a completely different way: universities, libraries and government bodies pay an annual fee to give their staff and students access to the platform. This revenue model is?", a:"What is a subscription model?", note:"Informit's revenue is more predictable than ELICOS because contracts renew annually. But customer retention is everything — a lost subscription is a lost recurring income stream." },
+      { points:1000, q:"Business unit that generates the second largest share of the organisation's total revenue, making it a significant financial contributor to RMIT UP's bottom line.", a:"What is Informit?", note:"Many people are surprised to learn that Informit — a research database — is RMIT UP's 2nd biggest revenue generator. Its institutional subscription model, with hundreds of university and library clients, produces substantial and predictable income." },
     ]
   },
   {
-    name:"Cash &\nBudgets",
+    name:"Budgets &\nSpending",
     questions:[
-      { points:200,  q:"The original financial plan locked in at the start of the year, before reality gets in the way.", a:"What is a Budget?", note:"Distinct from a forecast, which is updated as the year progresses." },
-      { points:400,  q:"Cash on hand divided by monthly cash burn — your CFO just said the company has 60 of them.", a:"What are Days of Runway?", note:"At 60 days, every spend decision is urgent." },
-      { points:600,  q:"What customers owe you, plus stock on hand, minus what you owe suppliers.", a:"What is Working Capital?", note:"Formula: Current Assets minus Current Liabilities. A growing business can drain this while still profitable." },
-      { points:800,  q:"Your team spent $320K of a $500K annual budget by July. The expected spend to that point was $291K. This word describes the $29K gap.", a:"What is a Variance? (Or: Unfavourable variance?)", note:"Variance analysis compares actuals to plan. Always ask: structural issue or timing?" },
-      { points:1000, q:"Budgeting approach where every dollar must be justified from scratch each year — nothing rolls over automatically.", a:"What is Zero-Based Budgeting?", note:"Contrast with incremental budgeting, where last year is the starting point." },
+      { points:200,  q:"The financial plan agreed at the start of the year that tells each team how much they can spend and invest to deliver objectives. It doesn't change just because circumstances do.", a:"What is a budget?", note:"The budget is the target set at planning time (generally started in July and agreed by Board in September). What actually gets spent is different — that's called actuals. The gap between them is called a variance." },
+      { points:400,  q:"Your team spent $180,000 of a $300,000 annual budget by the end of July. Finance expected you to have spent $165,000 by that point. This word describes the $15,000 gap.", a:"What is a variance?", note:"Variances aren't always bad — but they always need an explanation. Was it a timing issue or a real overspend? That's the question finance will ask." },
+      { points:600,  q:"Halfway through the year, your program intake comes in 20% below or above plan. Finance asks every team to update their expected spend and revenue for the rest of the year. This updated estimate is called.", a:"What is a forecast? (Or: a reforecast?)", note:"A forecast is your best current view of what you'll spend or earn. Unlike a budget, it moves. Finance does this monthly. Good businesses update their forecast when things change — not at year end." },
+      { points:800,  q:"You've signed a contract with a contractor for $40,000 for work delivered in Term 2. The invoice hasn't arrived yet — but this amount already counts against your budget.", a:"What is a commitment?", note:"Commitments are signed obligations not yet invoiced. They reduce your available budget immediately. Forgetting to account for them is one of the most common manager budget mistakes." },
+      { points:1000, q:"Informit works with more than 650 academic publishers, peak bodies and collecting societies. In return for distributing their content on the platform, Informit pays them a share of subscription revenue. In finance, the cost of securing the right to distribute someone else's content is called this.", a:"What is a content licensing cost? (Or: royalty / rights payment)", note:"Content licensing is one of Informit's most significant cost lines. Every new publisher added to the platform increases content value — but also increases cost." },
     ]
   },
   {
-    name:"Investment\n& ROI",
+    name:"Our\nPeople",
     questions:[
-      { points:200,  q:"Benefit minus Cost, divided by Cost — expressed as a percentage.", a:"What is ROI? (Return on Investment)", note:"Simple but ignores timing. 50% ROI over 5 years ≠ 50% ROI in one year." },
-      { points:400,  q:"How long it takes an investment to pay for itself from the returns it generates.", a:"What is the Payback Period?", note:"2–3 years is the typical Australian corporate benchmark. Beyond 5 years needs a strong strategic argument." },
-      { points:600,  q:"A dollar today is worth more than a dollar next year because of this economic principle.", a:"What is the Time Value of Money?", note:"This is why future cash flows are discounted back to present value in NPV analysis." },
-      { points:800,  q:"This metric accounts for the timing of future cash flows. A positive result creates value; a negative result destroys it.", a:"What is NPV? (Net Present Value)", note:"Always trust NPV over ROI when they conflict. It is the preferred capital allocation tool." },
-      { points:1000, q:"The minimum return any project must beat to create value — typically 8 to 12 percent for Australian mid-large corporates.", a:"What is WACC? (Weighted Average Cost of Capital)", note:"Every project's IRR should be compared against WACC. Fall below it and you destroy value." },
+      { points:200,  q:"This particular cost category makes up 60% of RMIT UP's expenses.", a:"What are salary and wages?", note:"People are our biggest cost. This is why every decision to hire, extend a contract or bring in casual staff is also a financial decision — even if it doesn't feel like one at the time." },
+      { points:400,  q:"You want to hire a new team member on a salary of $100,000. The real cost will be $125,000. The extra $25,000 covers these.", a:"What are on-costs? (Superannuation, leave loading, and other employer costs like payroll tax and WorkCover)", note:"Australia's compulsory super rate plus annual leave loading and other entitlements adds roughly 20–25% on top of base salary. Always use the fully-loaded cost when thinking about whether you can afford a new role." },
+      { points:600,  q:"Investment with an expert to assist with a specific area of expertise.", a:"What is a consultant?", note:"Consultants provide output or advice across specialist areas. The risks: they're expensive, the IP leaves with them, and they can mask internal capability gaps rather than fixing them." },
+      { points:800,  q:"Finance assigns additional expenses — like rent, electricity, cleaning, IT equipment, licence fees and support functions — to revenue-generating units each year. These costs support the whole organisation.", a:"What are corporate overheads? (Or: shared service costs / indirect costs)", note:"Support functions like IT, HR, finance and student services and the cost of running a business are essential to RMIT UP's operations — but their costs are invisible to managers who only see their own budget. Understanding that every program carries a share of these overhead costs explains why a program can appear to break even on direct costs alone but still run at a deficit when the full picture is shown." },
+      { points:1000, q:"An investment in activity or physical assets to address an identified market need and drive engagement and interest in studying at RMIT UP.", a:"What is marketing?", note:"Marketing is the investment we make to turn a great course into actual enrolments — building awareness, engagement, and interest so people choose to study with us." },
     ]
   },
   {
-    name:"Aussie\nContext",
+    name:"Workday &\nProcesses",
     questions:[
-      { points:200,  q:"Company income tax rate for large Australian businesses with aggregated turnover of $50 million or more.", a:"What is 30%?", note:"Businesses under $50M pay 25%. Every legitimately deductible dollar reduces this liability." },
-      { points:400,  q:"This mandatory employer contribution sits at 11.5% in 2024–25 and rises to 12% on 1 July 2025.", a:"What is the Superannuation Guarantee? (Or: super?)", note:"Total employment on-costs in Australia typically add 20–25% on top of base salary." },
-      { points:600,  q:"State-based tax that catches fast-growing businesses off guard — kicks in around $700K wages in Victoria, $1.2M in NSW.", a:"What is Payroll Tax?", note:"Multi-state employers aggregate wages nationally, not per state." },
-      { points:800,  q:"Under ASX Listing Rules, a listed company must immediately notify the exchange of anything that meets this two-word test.", a:"What is Continuous Disclosure? (Or: material information?)", note:"Why CFOs carefully review what gets said in all-hands meetings and investor briefings." },
-      { points:1000, q:"This 2019 Australian accounting standard forced operating leases onto the balance sheet, suddenly making many companies look far more indebted.", a:"What is AASB 16? (Leases)", note:"Created right-of-use assets and lease liabilities — materially changing net debt and EBITDA across industry." },
+      { points:200,  q:"The system RMIT UP uses to claim expenses, track budgets, record actual spending, manage headcount and produce financial reports.", a:"What is Workday?", note:"Workday is our financial dashboard. The most important thing to find: your Budget vs Actuals report. Finance will help generate these reports for you." },
+      { points:400,  q:"Everyone can access this help through Service Connect, Teams, email or a drop-in.", a:"Where can you find finance help?", note:"Finance is very happy to assist with all finance matters — there is a finance help desk available on Thursdays but please reach out for all your finance needs, including running actual vs budget reports — very important." },
+      { points:600,  q:"RMIT UP invests in in-person experiences in offshore markets to showcase what it is like to study at RMIT UP.", a:"What is a demo class?", note:"Demo classes give prospective students and agents in offshore markets a taste of studying at RMIT UP — an investment in building the pipeline of future enrolments." },
+      { points:800,  q:"When finance closes the books at the end of each month and produces reports for the financial result.", a:"What is month end? (Or: month-end cut-off)", note:"Late approvals in Workday after month end appear in the wrong period. This distorts reports and makes your team's budget look better or worse than it really is." },
+      { points:1000, q:"Annual process from July to September when teams submit their resource requirements, plans and expected investment for the year ahead.", a:"What is the budget planning cycle?", note:"Your input at planning time determines your budget for the whole year. Managers who engage seriously get budgets that reflect reality. Those who don't often spend the year explaining variances." },
     ]
   },
   {
-    name:"Jargon\nDecoder",
+    name:"Plain English\nDecoder",
     questions:[
-      { points:200,  q:"Long-term asset spend — equipment, technology, property — as opposed to day-to-day running costs.", a:"What is Capex? (Capital Expenditure)", note:"Capex hits the balance sheet. Opex hits the P&L immediately." },
-      { points:400,  q:"Two words describing what happened when EBITDA as a percentage of revenue falls — costs grew faster than income.", a:"What is Margin Compression?", note:"EBITDA Margin = EBITDA ÷ Revenue. The business is keeping less of every dollar it makes." },
-      { points:600,  q:"Your team ran more programs than planned — good. Each one cost more per unit than expected — not good. These are the two components of this type of report.", a:"What is Variance Analysis? (Volume variance and rate variance)", note:"Volume: did you do more or less than planned? Rate: did each unit cost more or less?" },
-      { points:800,  q:"The CFO rejects an acquisition because it will reduce this metric — the earnings attributable to each share of company stock.", a:"What is EPS? (Earnings Per Share)", note:"Accretive = adds to EPS. Dilutive = reduces it. Central to M&A analysis." },
-      { points:1000, q:"A cost that stays the same regardless of how much you produce or how many customers you serve — rent is the classic example.", a:"What is a Fixed Cost?", note:"Contrast with variable costs. Understanding this split is essential for break-even analysis and pricing." },
+      { points:200,  q:"Day-to-day running costs — staff, software licences, travel, events, office supplies — as opposed to buying something long-term like a building or major piece of equipment.", a:"What is OpEx? (Operating Expenditure)", note:"OpEx hits your budget immediately and directly. Most RMIT UP managers only deal with OpEx. CapEx (Capital Expenditure) is long-term asset spending and usually goes through a separate approval process." },
+      { points:400,  q:"When RMIT UP runs a program, some costs — like a teacher's salary or a room booking — can be directly linked to that specific program. But other costs, like the finance team, HR, IT systems and building maintenance, are shared across the whole organisation. Finance distributes a share of these shared costs to each program using a formula. These shared costs, once allocated, are called?", a:"What are overhead allocations? (Or: shared service costs / central cost allocations)", note:"Overhead allocations often surprise managers — a program can look profitable on direct costs alone but run at a deficit once overheads are added. Understanding that your program carries a share of the whole organisation's support costs is essential for reading your numbers accurately." },
+      { points:600,  q:"An RMIT UP English language program charges students $5,450 per course. The direct cost to deliver that course — teacher salaries, materials, classroom costs — is $2,000 per student. The $3,450 difference, expressed as a percentage of the $5,450 fee, is this financial metric — and it tells us how much is left to cover overhead before we make a profit.", a:"What is gross margin? (Or: gross profit margin — 63.3% in this example)", note:"Gross margin = (Revenue minus Direct Costs) divided by Revenue. A higher gross margin means more money left over to cover shared costs like administration, IT and facilities. When enrolment numbers drop, gross margin compresses quickly because direct costs don't fall at the same rate as revenue." },
+      { points:800,  q:"Twice a year, RMIT University formally looks at RMIT UP's financial performance and requires us to submit an updated view of our full-year financial position.", a:"What is a reforecast?", note:"The 3+9 and 8+4 are the two moments each year when RMIT University formally scrutinises RMIT UP's numbers. Every team's forecast feeds into these submissions. An inaccurate forecast from one manager doesn't just affect their team — it flows into the numbers RMIT UP presents to the University, Board and Council." },
+      { points:1000, q:"RMIT UP closes its books for the full-year result on this date.", a:"What is financial year end? (31 December)", note:"Year-end close is the most important financial deadline in RMIT UP's calendar. Every unresolved invoice, unapproved PO or miscoded transaction at 31 Dec affects the organisation's final reported result — the number the Board, RMIT University and VAGO see. Managers who understand this treat the Dec deadline seriously." },
     ]
   }
 ];
@@ -461,7 +479,7 @@ const SCENARIOS = [
   },
   {
     title:"Scenario 2 — The Forecast That Says “Cut”",
-    text:"Mid-year, Finance shares a forecast showing your portfolio will land 15% under revenue — a couple of corporate cohorts slipped and an open-enrolment program under-filled. You're asked to find savings to partially close the gap. Your costs are roughly: 55% people (including sessional facilitators), 20% platform and IT, 15% marketing, 10% other. Cutting facilitators hits delivery quality; cutting marketing risks the back-half pipeline; the platform costs are committed.",
+    text:"Mid-year, Finance shares a forecast showing your portfolio will land 15% under revenue — a couple of external corporate opportunities slipped and a program under-filled. You're asked to find savings to partially close the gap. Your costs are roughly: 55% people (including sessional facilitators), 20% platform and IT, 15% marketing, 10% other. Cutting facilitators hits delivery quality; cutting marketing risks the back-half pipeline; the platform costs are committed.",
     prompt:"Discuss and present back: Where do you find the savings, and what do you protect at all costs? Which “saving” is actually just deferring a cost into next year?",
     starters:[
       "Which of your costs are committed versus discretionary right now?",
@@ -836,41 +854,32 @@ function openScenario(i) {
   badge.style.color = t.uiColor;
   document.getElementById('scTitle').textContent = s.title;
   document.getElementById('scText').textContent = s.text;
-  document.getElementById('scPrompt').textContent = s.prompt;
-  const hintBox = document.getElementById('scHintBox');
-  hintBox.className = 'hint-box';
-  hintBox.innerHTML = '';
-  renderHintButtons(i);
+  renderStarterQuestions(i);
   renderThoughts();
   document.getElementById('thoughtInput').value = '';
   showScreen('scenario');
   startThoughtsPolling();
 }
-function renderHintButtons(i) {
+function renderStarterQuestions(i) {
   const s = SCENARIOS[i];
-  const wrap = document.getElementById('hintButtons');
+  const wrap = document.getElementById('starterQuestions');
   wrap.innerHTML = '';
-  s.starters.forEach((starter, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'hint-btn';
-    btn.textContent = `HINT ${idx+1}`;
-    btn.onclick = () => revealStarter(idx, btn);
-    wrap.appendChild(btn);
+  s.starters.slice(0,3).forEach((question, idx) => {
+    const block = document.createElement('div');
+    block.className = 'starter-q';
+    const label = document.createElement('div');
+    label.className = 'starter-q-text';
+    label.textContent = `${idx+1}. ${question}`;
+    const ta = document.createElement('textarea');
+    ta.id = `answer${idx}`;
+    ta.rows = 2;
+    ta.placeholder = 'Type your answer…';
+    ta.oninput = queueSaveAnswers;
+    ta.onblur = saveAnswers;
+    block.appendChild(label);
+    block.appendChild(ta);
+    wrap.appendChild(block);
   });
-}
-function revealStarter(idx, btn) {
-  const s = SCENARIOS[currentScenario];
-  const hintBox = document.getElementById('scHintBox');
-  if (!hintBox.classList.contains('show')) {
-    hintBox.innerHTML = '<div class="hint-label">CONVERSATION STARTERS</div>';
-    hintBox.classList.add('show');
-  }
-  const item = document.createElement('div');
-  item.className = 'hint-item';
-  item.textContent = `${idx+1}. ${s.starters[idx]}`;
-  hintBox.appendChild(item);
-  btn.classList.add('used');
-  btn.disabled = true;
 }
 // ── TEAM THOUGHTS (synced via Netlify Blobs so the host can view any team's page) ──
 const THOUGHTS_API = '/.netlify/functions/thoughts';
@@ -900,14 +909,49 @@ function renderThoughtList(list) {
     wrap.appendChild(item);
   });
 }
+let answersCache = ["", "", ""];
+let recommendationCache = "";
+
 async function renderThoughts() {
   try {
     const res = await fetch(`${THOUGHTS_API}?team=${currentScenario}`);
     const data = await res.json();
     renderThoughtList(data.thoughts || []);
+    answersCache = data.answers || ["", "", ""];
+    recommendationCache = data.recommendation || "";
+    applyAnswers();
   } catch(e) {
     // Offline or function unavailable — show what we last had
     renderThoughtList(thoughtsCache);
+  }
+}
+function applyAnswers() {
+  for (let idx = 0; idx < 3; idx++) {
+    const ta = document.getElementById(`answer${idx}`);
+    if (ta && document.activeElement !== ta) ta.value = answersCache[idx] || '';
+  }
+  const rec = document.getElementById('recommendationInput');
+  if (rec && document.activeElement !== rec) rec.value = recommendationCache || '';
+}
+let saveAnswersTimeout = null;
+function queueSaveAnswers() {
+  if (saveAnswersTimeout) clearTimeout(saveAnswersTimeout);
+  saveAnswersTimeout = setTimeout(saveAnswers, 1200);
+}
+async function saveAnswers() {
+  if (saveAnswersTimeout) { clearTimeout(saveAnswersTimeout); saveAnswersTimeout = null; }
+  const answers = [0,1,2].map(idx => document.getElementById(`answer${idx}`)?.value || '');
+  const recommendation = document.getElementById('recommendationInput')?.value || '';
+  answersCache = answers;
+  recommendationCache = recommendation;
+  try {
+    await fetch(THOUGHTS_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: currentScenario, answers, recommendation })
+    });
+  } catch(e) {
+    showToast('Couldn\'t save — check connection and try again');
   }
 }
 async function addThought() {
