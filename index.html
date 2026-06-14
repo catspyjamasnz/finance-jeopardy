@@ -142,6 +142,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .activity-btn .a-desc{font-size:13px;color:var(--silver);margin-top:6px;line-height:1.5;}
 .back-link{position:fixed;top:18px;left:18px;font-size:13px;color:var(--silver);text-decoration:none;cursor:pointer;z-index:50;border:1px solid rgba(255,255,255,.15);border-radius:30px;padding:6px 14px;background:rgba(4,4,26,.6);}
 .back-link:hover{color:#fff;border-color:rgba(255,255,255,.4);}
+.breadcrumb{position:fixed;top:18px;left:18px;font-size:13px;color:var(--silver);z-index:50;border:1px solid rgba(255,255,255,.15);border-radius:30px;padding:6px 14px;background:rgba(4,4,26,.6);display:flex;gap:6px;align-items:center;max-width:calc(100vw - 36px);overflow-x:auto;white-space:nowrap;}
+.breadcrumb a{color:var(--silver);text-decoration:none;cursor:pointer;}
+.breadcrumb a:hover{color:#fff;}
+.breadcrumb .crumb-sep{color:rgba(255,255,255,.3);}
+.breadcrumb .crumb-current{color:#fff;font-weight:600;}
+@media(max-width:600px){.breadcrumb{font-size:11px;padding:5px 10px;}}
 /* ─── SHOW ME THE MONEY ─── */
 #scenariosIntro,#scenario,#scenariosSummary{align-items:center;justify-content:center;padding:40px 20px;}
 .assign-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;}
@@ -170,11 +176,17 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 /* ─── TEAM THOUGHTS ─── */
 .thoughts-section{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);}
 .thoughts-label{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:3px;color:var(--rmit-azure);margin-bottom:6px;}
+.thoughts-label-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.thoughts-clear{font-size:12px;color:var(--silver);text-decoration:underline;cursor:pointer;flex-shrink:0;}
+.thoughts-clear:hover{color:var(--rmit-red);}
 .thoughts-help{font-size:13px;color:var(--silver);line-height:1.5;margin-bottom:14px;}
-.thought-input-row{display:flex;gap:8px;margin-bottom:14px;}
-.thought-input-row input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 14px;color:var(--white);font-size:15px;font-family:inherit;}
-.thought-input-row input::placeholder{color:var(--silver);}
-.thought-input-row input:focus{outline:none;border-color:var(--rmit-azure);}
+.host-reset-link{display:block;text-align:center;margin-top:16px;font-size:12px;color:var(--silver);text-decoration:underline;cursor:pointer;opacity:.6;}
+.host-reset-link:hover{opacity:1;color:var(--rmit-red);}
+.thought-input-row{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.thought-input-row textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 14px;color:var(--white);font-size:15px;font-family:inherit;resize:vertical;line-height:1.4;}
+.thought-input-row textarea::placeholder{color:var(--silver);}
+.thought-input-row textarea:focus{outline:none;border-color:var(--rmit-azure);}
+.thought-input-row button{align-self:flex-end;}
 .thought-list{display:flex;flex-direction:column;gap:8px;}
 .thought-item{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;font-size:14px;line-height:1.5;}
 .thought-item .ti-text{flex:1;}
@@ -192,14 +204,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   .timer-row{justify-content:center}
   .scenario-actions{flex-direction:column}
   .scenario-actions .btn{width:100%}
+  .thought-input-row textarea{padding:14px 16px;font-size:16px;}
+  .thought-input-row button{width:100%;align-self:stretch;}
 }
 </style>
 </head>
 <body>
 <!-- HOME -->
 <div id="home" class="screen active">
-  <div class="logo-title">Finance Workshop</div>
-  <div class="logo-sub">Senior Leadership Edition</div>
+  <div class="logo-title">We Lead - Finance</div>
   <div class="rmit-tag">RMIT University</div>
   <div class="intro-card">
     <h2>Choose an Activity</h2>
@@ -211,7 +224,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
       <div class="activity-btn" onclick="startScenarios()">
         <div class="a-num">ACTIVITY 2</div>
-        <div class="a-title">Show Me the Money!!</div>
+        <div class="a-title">Show Me The Money!!</div>
         <div class="a-desc">Each team works through a real finance scenario, then presents their thinking back to the room.</div>
       </div>
     </div>
@@ -219,7 +232,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 </div>
 <!-- INTRO -->
 <div id="intro" class="screen">
-  <a class="back-link" onclick="showScreen('home')">← Home</a>
+  <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><span class="crumb-current">Finance Jeopardy</span></div>
   <div class="logo-title">Finance Jeopardy</div>
   <div class="logo-sub">Senior Leadership Edition</div>
   <div class="rmit-tag">RMIT University</div>
@@ -262,7 +275,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 </div>
 <!-- WINNER -->
 <div id="winner" class="screen">
-  <a class="back-link" onclick="showScreen('home')">← Home</a>
+  <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><a onclick="showScreen('intro')">Finance Jeopardy</a><span class="crumb-sep">›</span><span class="crumb-current">Winner</span></div>
   <div class="winner-trophy">🏆</div>
   <div class="winner-title">Winner!</div>
   <div class="winner-name" id="winnerName"></div>
@@ -271,13 +284,20 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 </div>
 <!-- SCENARIOS INTRO -->
 <div id="scenariosIntro" class="screen">
-  <a class="back-link" onclick="showScreen('home')">← Home</a>
-  <div class="logo-title">Show Me the Money!!</div>
+  <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><span class="crumb-current">Show Me The Money</span></div>
+  <div class="logo-title">Show Me The Money!!</div>
   <div class="logo-sub">Scenario Challenge</div>
   <div class="rmit-tag">RMIT University</div>
   <div class="intro-card">
     <h2>Tap Your Team</h2>
-    <p style="text-align:center;font-size:13px;color:var(--silver);margin-bottom:20px;">Each team has its own scenario — tap your team's button to open it on your phone.</p>
+    <p style="text-align:center;font-size:13px;color:var(--silver);margin-bottom:8px;">Each team has its own scenario — tap your team's button to open it on your phone.</p>
+    <p style="text-align:center;font-size:13px;color:var(--silver);margin-bottom:20px;">On your own phone or laptop, go to <strong style="color:var(--rmit-azure);letter-spacing:1px;">weleadfinance.netlify.app</strong> and choose Activity 2.</p>
+    <div class="timer-row" style="justify-content:center;margin-bottom:24px;">
+      <div class="timer-display" id="scTimer">10:00</div>
+      <button class="btn btn-secondary" onclick="timerStart()">START</button>
+      <button class="btn btn-secondary" onclick="timerPause()">PAUSE</button>
+      <button class="btn btn-secondary" onclick="timerReset()">RESET</button>
+    </div>
     <div class="assign-grid" id="assignGrid"></div>
     <ul class="rules-list">
       <li>10 minutes to discuss as a team</li>
@@ -287,30 +307,28 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <li>One person scribes — capture your team's thinking in Team Thoughts so you can present from it</li>
     </ul>
     <button class="btn-start" style="background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;filter:drop-shadow(0 4px 20px rgba(250,200,0,.4))" onclick="showScenariosSummary()">HOST: VIEW DEBRIEF / FINANCE LENS</button>
+    <a class="host-reset-link" onclick="resetAllThoughts()">Host: reset all Team Thoughts (new cohort)</a>
   </div>
 </div>
 <!-- SCENARIO -->
 <div id="scenario" class="screen">
-  <a class="back-link" onclick="showScreen('scenariosIntro')">← Scenarios</a>
+  <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><a onclick="showScreen('scenariosIntro')">Show Me The Money</a><span class="crumb-sep">›</span><span class="crumb-current" id="scBreadcrumbTeam">Team</span></div>
   <div class="scenario-card">
     <div class="scenario-team-badge" id="scTeamBadge"></div>
     <div class="scenario-title" id="scTitle"></div>
     <div class="scenario-text" id="scText"></div>
     <div class="scenario-prompt" id="scPrompt"></div>
-    <div class="timer-row">
-      <div class="timer-display" id="scTimer">10:00</div>
-      <button class="btn btn-secondary" onclick="timerStart()">START</button>
-      <button class="btn btn-secondary" onclick="timerPause()">PAUSE</button>
-      <button class="btn btn-secondary" onclick="timerReset()">RESET</button>
-    </div>
     <div class="hint-label">STUCK? TAP A STARTER</div>
     <div class="hint-buttons" id="hintButtons"></div>
     <div class="hint-box" id="scHintBox"></div>
     <div class="thoughts-section">
-      <div class="thoughts-label">TEAM THOUGHTS — SCRIBE NOTES</div>
-      <p class="thoughts-help">One person types, the team's thoughts build up below. You can present straight from this list — and delete anything you change your mind on.</p>
+      <div class="thoughts-label-row">
+        <div class="thoughts-label">TEAM THOUGHTS — SCRIBE NOTES</div>
+        <a class="thoughts-clear" onclick="clearTeamThoughts()">Clear our notes</a>
+      </div>
+      <p class="thoughts-help">Capture things as you go — don't wait until the end. Jot down each idea, question or decision as it comes up, one at a time. You can present straight from this list — and delete anything you change your mind on.</p>
       <div class="thought-input-row">
-        <input type="text" id="thoughtInput" placeholder="Type a thought, then tap Add…" onkeydown="if(event.key==='Enter')addThought()">
+        <textarea id="thoughtInput" placeholder="Type a thought, then tap Add…" rows="3" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addThought();}"></textarea>
         <button class="btn btn-correct" onclick="addThought()">ADD</button>
       </div>
       <div class="thought-list" id="thoughtList"></div>
@@ -322,7 +340,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 </div>
 <!-- SCENARIOS SUMMARY -->
 <div id="scenariosSummary" class="screen">
-  <div class="logo-title">Show Me the Money!!</div>
+  <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><a onclick="showScreen('scenariosIntro')">Show Me The Money</a><span class="crumb-sep">›</span><span class="crumb-current">Debrief</span></div>
+  <div class="logo-title">Show Me The Money!!</div>
   <div class="logo-sub">Debrief — Key Principles</div>
   <div class="rmit-tag">RMIT University</div>
   <div class="intro-card" style="max-width:760px">
@@ -809,6 +828,7 @@ function openScenario(i) {
   currentScenario = i;
   const t = TEAMS[i];
   const s = SCENARIOS[i];
+  document.getElementById('scBreadcrumbTeam').textContent = `Team ${t.name}`;
   const badge = document.getElementById('scTeamBadge');
   badge.textContent = `Team ${t.name}`;
   badge.style.background = t.uiColor + '22';
@@ -823,7 +843,6 @@ function openScenario(i) {
   renderHintButtons(i);
   renderThoughts();
   document.getElementById('thoughtInput').value = '';
-  timerReset();
   showScreen('scenario');
   startThoughtsPolling();
 }
@@ -910,6 +929,7 @@ async function addThought() {
   input.focus();
 }
 async function deleteThought(idx) {
+  if (!confirm('Delete this thought? This can\'t be undone.')) return;
   try {
     const res = await fetch(THOUGHTS_API, {
       method: 'DELETE',
@@ -930,6 +950,33 @@ function stopThoughtsPolling() {
   if (thoughtsPollInterval) {
     clearInterval(thoughtsPollInterval);
     thoughtsPollInterval = null;
+  }
+}
+async function clearTeamThoughts() {
+  if (!confirm("Clear all of this team's notes? This can't be undone.")) return;
+  try {
+    const res = await fetch(THOUGHTS_API, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: currentScenario, clear: true })
+    });
+    const data = await res.json();
+    renderThoughtList(data.thoughts || []);
+  } catch(e) {
+    showToast('Couldn\'t clear — check connection and try again');
+  }
+}
+async function resetAllThoughts() {
+  if (!confirm('Reset Team Thoughts for ALL teams? This clears every team\'s notes ready for a new cohort and can\'t be undone.')) return;
+  try {
+    await fetch(THOUGHTS_API, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ resetAll: true })
+    });
+    showToast('All Team Thoughts reset');
+  } catch(e) {
+    showToast('Couldn\'t reset — check connection and try again');
   }
 }
 function showScenariosSummary() {

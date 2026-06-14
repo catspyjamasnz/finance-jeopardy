@@ -4,6 +4,8 @@
 // GET    /.netlify/functions/thoughts?team=0        -> { thoughts: [...] }
 // POST   /.netlify/functions/thoughts  {team, text} -> appends, returns { thoughts: [...] }
 // DELETE /.netlify/functions/thoughts  {team, idx}  -> removes item at idx, returns { thoughts: [...] }
+// DELETE /.netlify/functions/thoughts  {team, clear:true} -> clears that team's whole list
+// DELETE /.netlify/functions/thoughts  {resetAll:true}    -> clears ALL teams' lists (host reset)
 
 import { getStore } from "@netlify/blobs";
 
@@ -38,9 +40,29 @@ export default async (req) => {
   }
 
   if (req.method === "DELETE") {
-    const { team, idx } = await req.json();
-    if (team === undefined || idx === undefined) {
-      return Response.json({ error: "Missing team or idx" }, { status: 400 });
+    const body = await req.json();
+
+    // Host reset: clear every team's list
+    if (body.resetAll) {
+      for (let t = 0; t < 5; t++) {
+        await store.setJSON(keyFor(t), []);
+      }
+      return Response.json({ ok: true });
+    }
+
+    const { team, idx, clear } = body;
+    if (team === undefined) {
+      return Response.json({ error: "Missing team" }, { status: 400 });
+    }
+
+    // Clear a single team's whole list
+    if (clear) {
+      await store.setJSON(keyFor(team), []);
+      return Response.json({ thoughts: [] });
+    }
+
+    if (idx === undefined) {
+      return Response.json({ error: "Missing idx" }, { status: 400 });
     }
     const list = (await store.get(keyFor(team), { type: "json" })) || [];
     list.splice(idx, 1);
