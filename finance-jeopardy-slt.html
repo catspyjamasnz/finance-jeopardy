@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Jeopardy – RMIT Senior Leadership</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,wght@0,400;0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep:#04041a; --navy:#000054;
+  --rmit-red:#E60028; --rmit-blue:#000054;
+  --rmit-orange:#FC9147; --rmit-teal:#7AE1AA;
+  --rmit-azure:#00AAFF; --rmit-purple:#AA0082;
+  --gold:#FAC800; --gold-light:#FFD84D;
+  --white:#f0f4ff; --silver:#b8c4d8;
+  --green:#00DCB4; --red:#E60028;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--deep);color:var(--white);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1px 1px at 8% 18%,rgba(255,255,255,.25) 0%,transparent 100%),
+    radial-gradient(1px 1px at 28% 72%,rgba(255,255,255,.18) 0%,transparent 100%),
+    radial-gradient(1px 1px at 52% 38%,rgba(255,255,255,.22) 0%,transparent 100%),
+    radial-gradient(1px 1px at 74% 82%,rgba(255,255,255,.18) 0%,transparent 100%),
+    radial-gradient(1px 1px at 90% 12%,rgba(255,255,255,.25) 0%,transparent 100%),
+    radial-gradient(2px 2px at 18% 58%,rgba(230,0,40,.18) 0%,transparent 100%),
+    radial-gradient(2px 2px at 62% 28%,rgba(0,170,255,.13) 0%,transparent 100%);}
+.screen{display:none;position:relative;z-index:1;}
+.screen.active{display:flex;flex-direction:column;min-height:100vh;}
+#game.active{height:100vh;min-height:unset;overflow:hidden;}
+/* ─── INTRO ─── */
+#intro{align-items:center;justify-content:center;padding:40px 20px;}
+.logo-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5.5vw,64px);letter-spacing:4px;line-height:1;
+  color:var(--white);
+  filter:drop-shadow(0 0 32px rgba(240,244,255,.3));text-align:center;}
+.logo-sub{font-family:'Anton',sans-serif;font-size:clamp(13px,2vw,19px);letter-spacing:7px;color:var(--rmit-azure);margin-top:10px;text-align:center;}
+.rmit-tag{font-size:13px;letter-spacing:4px;color:rgba(255,255,255,.35);text-align:center;margin-top:6px;text-transform:uppercase;}
+.intro-card{background:rgba(0,0,84,.25);border:1px solid rgba(230,0,40,.2);border-radius:16px;padding:36px;max-width:620px;width:100%;backdrop-filter:blur(10px);margin-top:32px;}
+.intro-card h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:var(--white);margin-bottom:20px;text-align:center;}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+.team-pill{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 16px;}
+.team-swatch{width:28px;height:28px;border-radius:6px;flex-shrink:0;}
+.team-pill-name{font-weight:600;font-size:15px;}
+.team-pill-label{font-size:12px;color:var(--silver);margin-top:1px;}
+.rules-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
+.rules-list li{font-size:14px;color:var(--silver);padding-left:20px;position:relative;line-height:1.5;}
+.rules-list li::before{content:'→';position:absolute;left:0;color:var(--white);}
+.btn-start{width:100%;background:linear-gradient(135deg,var(--rmit-red),#ff3355);color:#fff;border:none;border-radius:10px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;cursor:pointer;transition:transform .15s,filter .15s;filter:drop-shadow(0 4px 20px rgba(230,0,40,.4));}
+.btn-start:hover{transform:translateY(-2px);filter:drop-shadow(0 8px 30px rgba(230,0,40,.6));}
+/* ─── GAME ─── */
+#game{flex-direction:column;}
+.game-header{background:linear-gradient(180deg,var(--deep),transparent);padding:12px 22px 12px;border-bottom:1px solid rgba(230,0,40,.15);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;flex-shrink:0;}
+.game-title-wrap{display:flex;flex-direction:column;}
+.game-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;background:linear-gradient(135deg,var(--rmit-red),#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.round-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--rmit-azure);}
+.scoreboard{display:flex;gap:8px;flex-wrap:wrap;}
+.score-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:30px;padding:6px 14px 6px 9px;font-size:13px;font-weight:400;transition:all .3s;}
+.score-chip.active-round{border-color:var(--gold);background:rgba(250,200,0,.12);box-shadow:0 0 12px rgba(250,200,0,.2);}
+.score-chip-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.score-chip-name{color:var(--white);font-size:13px;}
+.score-chip-val{color:var(--gold);font-family:'Anton',sans-serif;font-size:16px;}
+.board-wrap{flex:1;padding:10px 28px 14px;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+.board-grid{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:auto repeat(5,1fr);gap:5px;flex:1;min-height:0;max-width:1400px;width:100%;margin:0 auto;}
+.cat-header{background:var(--navy);border:1px solid rgba(0,170,255,.2);border-radius:9px;padding:8px 5px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:clamp(11px,1.5vw,16px);letter-spacing:1px;color:var(--rmit-azure);display:flex;align-items:center;justify-content:center;line-height:1.2;}
+.q-cell{background:#0a1650;border:1px solid rgba(230,0,40,.18);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,filter .15s,background .2s;position:relative;overflow:hidden;}
+.q-cell::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent 60%);pointer-events:none;}
+.q-cell:hover:not(.used):not(.locked){transform:scale(1.04);filter:drop-shadow(0 4px 16px rgba(230,0,40,.3));border-color:var(--rmit-red);background:#0e1e6a;}
+.q-cell.used{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.04);cursor:default;}
+.q-cell.locked:not(.used){background:#06093a;border-color:rgba(255,255,255,.06);cursor:not-allowed;opacity:.55;}
+.q-cell-val{font-family:'Bebas Neue',sans-serif;font-size:clamp(15px,2.1vw,28px);letter-spacing:2px;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.q-cell.used .q-cell-val{display:none;}
+.q-cell.used::after{content:'✓';color:rgba(255,255,255,.1);font-size:18px;}
+.q-cell.locked:not(.used) .q-cell-val{opacity:.4;}
+/* ─── ROUND TURN BANNER ─── */
+.selection-prompt{padding:7px 18px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.08);font-size:clamp(13px,1.1vw,16px);color:var(--silver);font-style:italic;text-align:center;line-height:1.4;}
+.selection-prompt strong{font-style:normal;font-weight:700;}
+.turn-banner{display:none;align-items:center;justify-content:center;gap:12px;padding:7px 18px;margin:0 14px 8px;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:clamp(13px,1.2vw,17px);letter-spacing:2px;border:1px solid;}
+.turn-banner.show{display:flex;}
+/* ─── MODAL ─── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(2,2,20,.93);z-index:100;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal{background:linear-gradient(160deg,#080f3a,#060c2a);border:1px solid rgba(230,0,40,.3);border-radius:20px;max-width:650px;width:100%;padding:34px;position:relative;box-shadow:0 0 60px rgba(230,0,40,.12),0 30px 80px rgba(0,0,0,.65);animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes modalIn{from{transform:scale(.85) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-cat{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:4px;color:var(--rmit-azure);margin-bottom:4px;}
+.modal-points{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:4px;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:18px;}
+.modal-clue{font-size:clamp(17px,2.8vw,24px);font-weight:600;line-height:1.45;color:var(--white);margin-bottom:26px;text-align:center;padding:18px;background:rgba(255,255,255,.03);border-radius:10px;min-height:80px;display:flex;align-items:center;justify-content:center;}
+.modal-answer-wrap{display:none;}
+.modal-answer-wrap.revealed{display:block;}
+.modal-answer-label{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:4px;color:rgba(250,200,0,.8);margin-bottom:9px;}
+.modal-answer{background:rgba(250,200,0,.07);border:1px solid rgba(250,200,0,.22);border-radius:10px;padding:14px 18px;font-size:clamp(17px,2.8vw,24px);font-weight:600;color:var(--gold-light);margin-bottom:8px;line-height:1.4;}
+.modal-note{font-size:clamp(13px,1.1vw,15px);color:var(--silver);font-style:italic;line-height:1.5;}
+.modal-actions{display:flex;gap:9px;flex-wrap:wrap;}
+.btn{border:none;border-radius:8px;padding:12px 20px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;cursor:pointer;transition:transform .12s,filter .12s;}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.btn-reveal{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;flex:1;}
+.btn-correct{background:var(--green);color:#000;flex:1;}
+.btn-wrong{background:var(--rmit-red);color:#fff;flex:1;}
+.btn-skip{background:rgba(255,255,255,.09);color:var(--silver);border:1px solid rgba(255,255,255,.13);}
+.modal-close{position:absolute;top:13px;right:17px;background:none;border:none;color:var(--silver);font-size:20px;cursor:pointer;opacity:.5;transition:opacity .2s;}
+.modal-close:hover{opacity:1;}
+.answering-team{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 16px;margin-bottom:18px;}
+.answering-swatch{width:20px;height:20px;border-radius:5px;}
+.answering-label{font-size:13px;letter-spacing:3px;font-family:'Bebas Neue',sans-serif;color:var(--silver);}
+.answering-name{font-size:20px;font-weight:700;}
+/* ─── ROUND SUMMARY ─── */
+#roundSummary{align-items:center;justify-content:center;padding:30px 20px;text-align:center;}
+.rs-round{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:5px;color:var(--rmit-azure);margin-bottom:6px;}
+.rs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,68px);letter-spacing:4px;background:linear-gradient(135deg,var(--rmit-red),#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:28px;}
+.chart-wrap{width:100%;max-width:560px;background:rgba(0,0,84,.2);border:1px solid rgba(230,0,40,.15);border-radius:16px;padding:24px;margin-bottom:28px;}
+.chart-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.chart-row:last-child{margin-bottom:0;}
+.chart-label{width:90px;text-align:right;font-size:13px;font-weight:600;flex-shrink:0;}
+.chart-bar-track{flex:1;background:rgba(255,255,255,.06);border-radius:30px;height:28px;overflow:hidden;position:relative;}
+.chart-bar-fill{height:100%;border-radius:30px;transition:width 1s cubic-bezier(.22,1,.36,1);display:flex;align-items:center;justify-content:flex-end;padding-right:10px;min-width:36px;}
+.chart-bar-val{font-family:'Anton',sans-serif;font-size:13px;color:#fff;white-space:nowrap;}
+.rs-round-earned{font-size:13px;color:var(--silver);margin-bottom:4px;}
+.btn-next-round{background:linear-gradient(135deg,var(--rmit-red),#ff3355);color:#fff;border:none;border-radius:10px;padding:15px 44px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;filter:drop-shadow(0 4px 20px rgba(230,0,40,.4));transition:transform .15s,filter .15s;}
+.btn-next-round:hover{transform:translateY(-2px);filter:drop-shadow(0 8px 30px rgba(230,0,40,.6));}
+.next-round-hint{font-size:13px;color:var(--silver);margin-top:12px;}
+/* ─── WINNER ─── */
+#winner{align-items:center;justify-content:center;text-align:center;padding:40px 20px;}
+.winner-trophy{font-size:72px;margin-bottom:16px;animation:bounce 1s infinite alternate;}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.winner-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,8vw,74px);letter-spacing:4px;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.winner-name{font-family:'Anton',sans-serif;font-size:clamp(24px,5vw,48px);margin-bottom:32px;}
+.final-chart-wrap{width:100%;max-width:540px;background:rgba(0,0,84,.2);border:1px solid rgba(250,200,0,.2);border-radius:16px;padding:24px;margin-bottom:32px;}
+.btn-restart{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;border:none;border-radius:10px;padding:14px 42px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;filter:drop-shadow(0 4px 20px rgba(250,200,0,.4));transition:transform .15s;}
+.btn-restart:hover{transform:translateY(-2px);}
+.confetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:200;animation:confettiFall linear forwards;}
+@keyframes confettiFall{from{transform:translateY(-10px) rotate(0deg);opacity:1}to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:rgba(4,4,26,.96);border:1px solid var(--rmit-red);border-radius:30px;padding:10px 24px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--rmit-red);z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+@media(max-width:600px){.board-grid{gap:3px}.cat-header{font-size:9px;padding:5px 2px}.q-cell-val{font-size:12px}.modal{padding:20px 16px}.modal-points{font-size:36px}.team-grid{grid-template-columns:1fr}.selection-prompt{font-size:11px}.turn-banner{font-size:11px;padding:5px 10px;margin:0 8px 6px}}
+/* ─── HOME ─── */
+#home{align-items:center;justify-content:center;padding:40px 20px;}
+.home-buttons{display:flex;flex-direction:column;gap:16px;margin-top:8px;}
+.activity-btn{display:block;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:22px 24px;cursor:pointer;transition:transform .15s,filter .15s,border-color .15s;color:var(--white);}
+.activity-btn:hover{transform:translateY(-2px);border-color:var(--rmit-azure);}
+.activity-btn .a-num{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:4px;color:var(--rmit-azure);}
+.activity-btn .a-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-top:4px;}
+.activity-btn .a-desc{font-size:13px;color:var(--silver);margin-top:6px;line-height:1.5;}
+.back-link{position:fixed;top:18px;left:18px;font-size:13px;color:var(--silver);text-decoration:none;cursor:pointer;z-index:50;border:1px solid rgba(255,255,255,.15);border-radius:30px;padding:6px 14px;background:rgba(4,4,26,.6);}
+.back-link:hover{color:#fff;border-color:rgba(255,255,255,.4);}
+/* ─── SHOW ME THE MONEY ─── */
+#scenariosIntro,#scenario,#scenariosSummary{align-items:center;justify-content:center;padding:40px 20px;}
+.assign-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;}
+.assign-pill{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;color:var(--white);transition:transform .12s,border-color .12s;}
+.assign-pill:hover,.assign-pill:active{transform:translateY(-1px);border-color:rgba(255,255,255,.3);}
+.assign-swatch{width:24px;height:24px;border-radius:6px;flex-shrink:0;}
+.assign-num{font-family:'Anton',sans-serif;font-size:13px;color:var(--gold);margin-top:1px;}
+.scenario-card{background:rgba(0,0,84,.25);border:1px solid rgba(230,0,40,.2);border-radius:16px;padding:32px;max-width:740px;width:100%;backdrop-filter:blur(10px);}
+.scenario-team-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:30px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;margin-bottom:14px;}
+.scenario-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,4vw,32px);letter-spacing:2px;margin-bottom:14px;color:var(--white);}
+.scenario-text{font-size:15px;line-height:1.65;color:var(--silver);margin-bottom:16px;}
+.scenario-prompt{font-size:15px;line-height:1.65;color:var(--white);background:rgba(255,255,255,.04);border-radius:10px;padding:14px 16px;margin-bottom:22px;font-style:italic;}
+.timer-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.timer-display{font-family:'Anton',sans-serif;font-size:36px;color:var(--gold);min-width:90px;}
+.scenario-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-secondary{background:rgba(255,255,255,.09);color:var(--white);border:1px solid rgba(255,255,255,.13);}
+.hint-box{background:rgba(250,200,0,.07);border:1px solid rgba(250,200,0,.22);border-radius:10px;padding:14px 16px;margin-top:12px;display:none;}
+.hint-box.show{display:block;}
+.hint-item{font-size:14px;color:var(--gold-light);line-height:1.6;margin-bottom:10px;}
+.hint-item:last-child{margin-bottom:0;}
+.hint-label{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:3px;color:rgba(250,200,0,.8);margin-bottom:10px;}
+.hint-buttons{display:flex;gap:8px;flex-wrap:wrap;}
+.hint-btn{background:rgba(250,200,0,.12);border:1px solid rgba(250,200,0,.3);color:var(--gold-light);border-radius:8px;padding:10px 16px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;transition:transform .12s,filter .12s,opacity .15s;}
+.hint-btn:hover{transform:translateY(-1px);}
+.hint-btn.used{opacity:.35;cursor:default;transform:none;}
+/* ─── TEAM THOUGHTS ─── */
+.thoughts-section{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);}
+.thoughts-label{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:3px;color:var(--rmit-azure);margin-bottom:6px;}
+.thoughts-help{font-size:13px;color:var(--silver);line-height:1.5;margin-bottom:14px;}
+.thought-input-row{display:flex;gap:8px;margin-bottom:14px;}
+.thought-input-row input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:12px 14px;color:var(--white);font-size:15px;font-family:inherit;}
+.thought-input-row input::placeholder{color:var(--silver);}
+.thought-input-row input:focus{outline:none;border-color:var(--rmit-azure);}
+.thought-list{display:flex;flex-direction:column;gap:8px;}
+.thought-item{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;font-size:14px;line-height:1.5;}
+.thought-item .ti-text{flex:1;}
+.thought-item .ti-del{background:none;border:none;color:var(--rmit-red);cursor:pointer;font-size:18px;flex-shrink:0;line-height:1;padding:2px 4px;opacity:.6;}
+.thought-item .ti-del:hover{opacity:1;}
+.thought-empty{font-size:13px;color:var(--silver);font-style:italic;}
+.principle-list{text-align:left;display:flex;flex-direction:column;gap:14px;margin-bottom:28px;}
+.principle-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.6;}
+.principle-item .pr-num{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:3px;color:var(--rmit-azure);margin-bottom:6px;display:block;}
+.principle-item strong{color:var(--gold-light);}
+@media(max-width:600px){
+  .assign-grid{grid-template-columns:1fr}
+  .scenario-card{padding:22px 16px;margin-top:46px;}
+  .intro-card{padding:24px 18px;margin-top:46px;}
+  .timer-row{justify-content:center}
+  .scenario-actions{flex-direction:column}
+  .scenario-actions .btn{width:100%}
+}
+</style>
+</head>
+<body>
+<!-- HOME -->
+<div id="home" class="screen active">
+  <div class="logo-title">Finance Workshop</div>
+  <div class="logo-sub">Senior Leadership Edition</div>
+  <div class="rmit-tag">RMIT University</div>
+  <div class="intro-card">
+    <h2>Choose an Activity</h2>
+    <div class="home-buttons">
+      <div class="activity-btn" onclick="showScreen('intro')">
+        <div class="a-num">ACTIVITY 1</div>
+        <div class="a-title">Finance Jeopardy</div>
+        <div class="a-desc">5 rounds, 5 categories — teams compete to answer finance clues in "What is...?" form.</div>
+      </div>
+      <div class="activity-btn" onclick="startScenarios()">
+        <div class="a-num">ACTIVITY 2</div>
+        <div class="a-title">Show Me the Money!!</div>
+        <div class="a-desc">Each team works through a real finance scenario, then presents their thinking back to the room.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- INTRO -->
+<div id="intro" class="screen">
+  <a class="back-link" onclick="showScreen('home')">← Home</a>
+  <div class="logo-title">Finance Jeopardy</div>
+  <div class="logo-sub">Senior Leadership Edition</div>
+  <div class="rmit-tag">RMIT University</div>
+  <div class="intro-card">
+    <h2>The Teams</h2>
+    <div class="team-grid" id="teamGrid"></div>
+    <ul class="rules-list">
+      <li>5 rounds — each team starts one round and picks first</li>
+      <li>Then the other 4 teams each pick one clue in that round</li>
+      <li>Respond with a question: "What is...?" or "Who is...?"</li>
+      <li>Correct = earn the points. Wrong = lose the points</li>
+      <li>Scores shown after every round</li>
+    </ul>
+    <button class="btn-start" onclick="startGame()">LET'S PLAY</button>
+  </div>
+</div>
+<!-- GAME BOARD -->
+<div id="game" class="screen">
+  <div class="selection-prompt" id="selectionPrompt"></div>
+  <div class="game-header">
+    <div class="game-title-wrap">
+      <div class="game-title">Finance Jeopardy</div>
+      <div class="round-badge" id="roundBadge">ROUND 1 OF 5</div>
+    </div>
+    <div class="scoreboard" id="scoreboard"></div>
+  </div>
+  <div class="board-wrap">
+    <div class="turn-banner" id="turnBanner"></div>
+    <div class="board-grid" id="boardGrid"></div>
+  </div>
+</div>
+<!-- ROUND SUMMARY -->
+<div id="roundSummary" class="screen">
+  <div class="rs-round" id="rsRoundLabel">AFTER ROUND 1</div>
+  <div class="rs-title">Round<br>Results</div>
+  <div class="chart-wrap" id="rsChart"></div>
+  <div class="rs-round-earned" id="rsEarned"></div>
+  <button class="btn-next-round" id="btnNextRound" onclick="nextRound()">NEXT ROUND →</button>
+  <div class="next-round-hint" id="nextRoundHint"></div>
+</div>
+<!-- WINNER -->
+<div id="winner" class="screen">
+  <a class="back-link" onclick="showScreen('home')">← Home</a>
+  <div class="winner-trophy">🏆</div>
+  <div class="winner-title">Winner!</div>
+  <div class="winner-name" id="winnerName"></div>
+  <div class="final-chart-wrap" id="finalChart"></div>
+  <button class="btn-restart" onclick="restart()">PLAY AGAIN</button>
+</div>
+<!-- SCENARIOS INTRO -->
+<div id="scenariosIntro" class="screen">
+  <a class="back-link" onclick="showScreen('home')">← Home</a>
+  <div class="logo-title">Show Me the Money!!</div>
+  <div class="logo-sub">Scenario Challenge</div>
+  <div class="rmit-tag">RMIT University</div>
+  <div class="intro-card">
+    <h2>Tap Your Team</h2>
+    <p style="text-align:center;font-size:13px;color:var(--silver);margin-bottom:20px;">Each team has its own scenario — tap your team's button to open it on your phone.</p>
+    <div class="assign-grid" id="assignGrid"></div>
+    <ul class="rules-list">
+      <li>10 minutes to discuss as a team</li>
+      <li>Then present your position back to the room</li>
+      <li>There's rarely a single right answer — the value is in the trade-offs and reasoning</li>
+      <li>Stuck? Tap a hint button for a conversation starter</li>
+      <li>One person scribes — capture your team's thinking in Team Thoughts so you can present from it</li>
+    </ul>
+    <button class="btn-start" style="background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;filter:drop-shadow(0 4px 20px rgba(250,200,0,.4))" onclick="showScenariosSummary()">HOST: VIEW DEBRIEF / FINANCE LENS</button>
+  </div>
+</div>
+<!-- SCENARIO -->
+<div id="scenario" class="screen">
+  <a class="back-link" onclick="showScreen('scenariosIntro')">← Scenarios</a>
+  <div class="scenario-card">
+    <div class="scenario-team-badge" id="scTeamBadge"></div>
+    <div class="scenario-title" id="scTitle"></div>
+    <div class="scenario-text" id="scText"></div>
+    <div class="scenario-prompt" id="scPrompt"></div>
+    <div class="timer-row">
+      <div class="timer-display" id="scTimer">10:00</div>
+      <button class="btn btn-secondary" onclick="timerStart()">START</button>
+      <button class="btn btn-secondary" onclick="timerPause()">PAUSE</button>
+      <button class="btn btn-secondary" onclick="timerReset()">RESET</button>
+    </div>
+    <div class="hint-label">STUCK? TAP A STARTER</div>
+    <div class="hint-buttons" id="hintButtons"></div>
+    <div class="hint-box" id="scHintBox"></div>
+    <div class="thoughts-section">
+      <div class="thoughts-label">TEAM THOUGHTS — SCRIBE NOTES</div>
+      <p class="thoughts-help">One person types, the team's thoughts build up below. You can present straight from this list — and delete anything you change your mind on.</p>
+      <div class="thought-input-row">
+        <input type="text" id="thoughtInput" placeholder="Type a thought, then tap Add…" onkeydown="if(event.key==='Enter')addThought()">
+        <button class="btn btn-correct" onclick="addThought()">ADD</button>
+      </div>
+      <div class="thought-list" id="thoughtList"></div>
+    </div>
+    <div class="scenario-actions">
+      <button class="btn btn-secondary" onclick="showScreen('scenariosIntro')">← BACK TO TEAMS</button>
+    </div>
+  </div>
+</div>
+<!-- SCENARIOS SUMMARY -->
+<div id="scenariosSummary" class="screen">
+  <div class="logo-title">Show Me the Money!!</div>
+  <div class="logo-sub">Debrief — Key Principles</div>
+  <div class="rmit-tag">RMIT University</div>
+  <div class="intro-card" style="max-width:760px">
+    <h2>The Finance Lens</h2>
+    <div class="principle-list" id="principleList"></div>
+    <button class="btn-start" onclick="showScreen('home')">BACK TO HOME</button>
+  </div>
+</div>
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-cat" id="modalCat"></div>
+    <div class="modal-points" id="modalPoints"></div>
+    <div class="modal-clue" id="modalClue"></div>
+    <div class="answering-team" id="answeringTeam">
+      <div class="answering-swatch" id="answeringSwatch"></div>
+      <div>
+        <div class="answering-label">Answering Team</div>
+        <div class="answering-name" id="answeringName"></div>
+      </div>
+    </div>
+    <div id="revealWrap">
+      <div class="modal-actions">
+        <button class="btn btn-reveal" onclick="revealAnswer()">REVEAL ANSWER</button>
+        <button class="btn btn-skip" onclick="skipQ()">SKIP</button>
+      </div>
+    </div>
+    <div class="modal-answer-wrap" id="answerWrap">
+      <div class="modal-answer-label">Correct Response</div>
+      <div class="modal-answer" id="modalAnswer"></div>
+      <p class="modal-note" id="modalNote"></p>
+      <div class="modal-actions" style="margin-top:13px">
+        <button class="btn btn-correct" onclick="score(true)">✓ CORRECT</button>
+        <button class="btn btn-wrong" onclick="score(false)">✗ WRONG</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// ── RMIT TEAMS ──────────────────────────────────────────────────────────────
+const TEAMS = [
+  { name:'Red',    color:'#E60028', uiColor:'#E60028', textColor:'#fff' },
+  { name:'Blue',   color:'#000054', uiColor:'#5577FF', textColor:'#fff' },
+  { name:'Orange', color:'#FC9147', uiColor:'#FC9147', textColor:'#000' },
+  { name:'Teal',   color:'#7AE1AA', uiColor:'#7AE1AA', textColor:'#000' },
+  { name:'Azure',  color:'#00AAFF', uiColor:'#00AAFF', textColor:'#000' },
+];
+// ── CATEGORIES & CLUES ──────────────────────────────────────────────────────
+const CATEGORIES = [
+  {
+    name:"P&L\nBasics",
+    questions:[
+      { points:200,  q:"Revenue minus the direct cost of producing your goods or services.", a:"What is Gross Profit?", note:"Formula: Revenue minus COGS. Gross Profit Margin = Gross Profit ÷ Revenue." },
+      { points:400,  q:"The P&L metric that strips out salaries, rent and marketing — but adds back interest, tax, depreciation and amortisation.", a:"What is EBITDA?", note:"Earnings Before Interest, Tax, Depreciation and Amortisation. Standard in valuations and M&A." },
+      { points:600,  q:"Operating Profit divided by Revenue — it shrank when your costs rose 15% but revenue stayed flat.", a:"What is Operating Margin?", note:"Also accept: margin compression. When this falls, the business keeps less of every dollar it earns." },
+      { points:800,  q:"A company can show a healthy one of these yet still run out of cash if customers haven't paid their invoices.", a:"What is Profit? (Or: What is a P&L?)", note:"Profit ≠ cash. Businesses die from cashflow failure, not P&L failure." },
+      { points:1000, q:"Assets equal Liabilities plus Equity — that's why this statement is named what it is.", a:"What is a Balance Sheet?", note:"Also: Statement of Financial Position. P&L = performance. Balance Sheet = position." },
+    ]
+  },
+  {
+    name:"Cash &\nBudgets",
+    questions:[
+      { points:200,  q:"The original financial plan locked in at the start of the year, before reality gets in the way.", a:"What is a Budget?", note:"Distinct from a forecast, which is updated as the year progresses." },
+      { points:400,  q:"Cash on hand divided by monthly cash burn — your CFO just said the company has 60 of them.", a:"What are Days of Runway?", note:"At 60 days, every spend decision is urgent." },
+      { points:600,  q:"What customers owe you, plus stock on hand, minus what you owe suppliers.", a:"What is Working Capital?", note:"Formula: Current Assets minus Current Liabilities. A growing business can drain this while still profitable." },
+      { points:800,  q:"Your team spent $320K of a $500K annual budget by July. The expected spend to that point was $291K. This word describes the $29K gap.", a:"What is a Variance? (Or: Unfavourable variance?)", note:"Variance analysis compares actuals to plan. Always ask: structural issue or timing?" },
+      { points:1000, q:"Budgeting approach where every dollar must be justified from scratch each year — nothing rolls over automatically.", a:"What is Zero-Based Budgeting?", note:"Contrast with incremental budgeting, where last year is the starting point." },
+    ]
+  },
+  {
+    name:"Investment\n& ROI",
+    questions:[
+      { points:200,  q:"Benefit minus Cost, divided by Cost — expressed as a percentage.", a:"What is ROI? (Return on Investment)", note:"Simple but ignores timing. 50% ROI over 5 years ≠ 50% ROI in one year." },
+      { points:400,  q:"How long it takes an investment to pay for itself from the returns it generates.", a:"What is the Payback Period?", note:"2–3 years is the typical Australian corporate benchmark. Beyond 5 years needs a strong strategic argument." },
+      { points:600,  q:"A dollar today is worth more than a dollar next year because of this economic principle.", a:"What is the Time Value of Money?", note:"This is why future cash flows are discounted back to present value in NPV analysis." },
+      { points:800,  q:"This metric accounts for the timing of future cash flows. A positive result creates value; a negative result destroys it.", a:"What is NPV? (Net Present Value)", note:"Always trust NPV over ROI when they conflict. It is the preferred capital allocation tool." },
+      { points:1000, q:"The minimum return any project must beat to create value — typically 8 to 12 percent for Australian mid-large corporates.", a:"What is WACC? (Weighted Average Cost of Capital)", note:"Every project's IRR should be compared against WACC. Fall below it and you destroy value." },
+    ]
+  },
+  {
+    name:"Aussie\nContext",
+    questions:[
+      { points:200,  q:"Company income tax rate for large Australian businesses with aggregated turnover of $50 million or more.", a:"What is 30%?", note:"Businesses under $50M pay 25%. Every legitimately deductible dollar reduces this liability." },
+      { points:400,  q:"This mandatory employer contribution sits at 11.5% in 2024–25 and rises to 12% on 1 July 2025.", a:"What is the Superannuation Guarantee? (Or: super?)", note:"Total employment on-costs in Australia typically add 20–25% on top of base salary." },
+      { points:600,  q:"State-based tax that catches fast-growing businesses off guard — kicks in around $700K wages in Victoria, $1.2M in NSW.", a:"What is Payroll Tax?", note:"Multi-state employers aggregate wages nationally, not per state." },
+      { points:800,  q:"Under ASX Listing Rules, a listed company must immediately notify the exchange of anything that meets this two-word test.", a:"What is Continuous Disclosure? (Or: material information?)", note:"Why CFOs carefully review what gets said in all-hands meetings and investor briefings." },
+      { points:1000, q:"This 2019 Australian accounting standard forced operating leases onto the balance sheet, suddenly making many companies look far more indebted.", a:"What is AASB 16? (Leases)", note:"Created right-of-use assets and lease liabilities — materially changing net debt and EBITDA across industry." },
+    ]
+  },
+  {
+    name:"Jargon\nDecoder",
+    questions:[
+      { points:200,  q:"Long-term asset spend — equipment, technology, property — as opposed to day-to-day running costs.", a:"What is Capex? (Capital Expenditure)", note:"Capex hits the balance sheet. Opex hits the P&L immediately." },
+      { points:400,  q:"Two words describing what happened when EBITDA as a percentage of revenue falls — costs grew faster than income.", a:"What is Margin Compression?", note:"EBITDA Margin = EBITDA ÷ Revenue. The business is keeping less of every dollar it makes." },
+      { points:600,  q:"Your team ran more programs than planned — good. Each one cost more per unit than expected — not good. These are the two components of this type of report.", a:"What is Variance Analysis? (Volume variance and rate variance)", note:"Volume: did you do more or less than planned? Rate: did each unit cost more or less?" },
+      { points:800,  q:"The CFO rejects an acquisition because it will reduce this metric — the earnings attributable to each share of company stock.", a:"What is EPS? (Earnings Per Share)", note:"Accretive = adds to EPS. Dilutive = reduces it. Central to M&A analysis." },
+      { points:1000, q:"A cost that stays the same regardless of how much you produce or how many customers you serve — rent is the classic example.", a:"What is a Fixed Cost?", note:"Contrast with variable costs. Understanding this split is essential for break-even analysis and pricing." },
+    ]
+  }
+];
+// ── SHOW ME THE MONEY: SCENARIOS ─────────────────────────────────────────────
+// One scenario per team, mapped by index (Red, Blue, Orange, Teal, Azure)
+const SCENARIOS = [
+  {
+    title:"Scenario 1 — The Mid-Year Over-Enrolment",
+    text:"Your program launched in February with a budgeted intake of 120 students. By the March census you have 165 enrolled — a 38% over-enrolment. Great news for revenue, but your teaching team is already at capacity, student satisfaction scores are dipping, and two facilitators have flagged burnout. You have unspent budget in non-essential project work (a planned process-improvement initiative that hasn't started) but no line for additional teaching staff.",
+    prompt:"Discuss and present back: Do you spend to protect quality now, bank the upside, or something in between? What do you ask Finance to flex, and what's the risk of getting this wrong in either direction?",
+    starters:[
+      "What does the extra revenue actually cost you to deliver well?",
+      "Is there money already in your budget that could be redirected to teaching support?",
+      "What happens to satisfaction scores and word-of-mouth if quality slips this term?",
+      "Where's the line between protecting quality and overspending on a cohort that's already enrolled?"
+    ],
+    principle:"Revenue you can't deliver on well isn't a win — and a budget line is a plan, not a rule."
+  },
+  {
+    title:"Scenario 2 — The Forecast That Says “Cut”",
+    text:"Mid-year, Finance shares a forecast showing your portfolio will land 15% under revenue — a couple of corporate cohorts slipped and an open-enrolment program under-filled. You're asked to find savings to partially close the gap. Your costs are roughly: 55% people (including sessional facilitators), 20% platform and IT, 15% marketing, 10% other. Cutting facilitators hits delivery quality; cutting marketing risks the back-half pipeline; the platform costs are committed.",
+    prompt:"Discuss and present back: Where do you find the savings, and what do you protect at all costs? Which “saving” is actually just deferring a cost into next year?",
+    starters:[
+      "Which of your costs are committed versus discretionary right now?",
+      "What happens next year if you cut marketing to fix this year's gap?",
+      "Is a 'saving' really gone for good, or just pushed into next year?",
+      "Which costs will shrink on their own as cohorts shrink, without you having to act?"
+    ],
+    principle:"Not all costs are equally cuttable, and the cheapest cut to make is often the most expensive one to have made."
+  },
+  {
+    title:"Scenario 3 — Build vs Buy on a New Program",
+    text:"There's demand for a new professional program in an emerging field. You can build it in-house (your people, slower, cheaper cash cost, but it ties up capacity you'd otherwise use on existing delivery) or licence content and bring in expert contractors (faster to market, higher cash cost, less IP retained). The window of demand may not stay open long, and a competitor is rumoured to be moving.",
+    prompt:"Discuss and present back: Build, buy, or blend? How do you weigh speed-to-market against cost and IP, and what would tip the decision?",
+    starters:[
+      "How long is this demand window really likely to stay open?",
+      "What's the cost of being early but expensive, versus late but cheap?",
+      "Could a blend of build and buy work — and what would that look like in practice?",
+      "What's the hidden cost of tying up your team's capacity to build this in-house?"
+    ],
+    principle:"The cheapest option on paper isn't the best if it loses you the market — weigh cost against speed, IP, and opportunity cost together."
+  },
+  {
+    title:"Scenario 4 — The Loss-Leader Program (Lifetime Value)",
+    text:"A new product runs at a slim margin — on its own numbers it barely washes its face. But it's where a large share of learners first encounter RMIT UP, and many go on to enrol in higher-value programs afterward. There's pressure to either lift its price (risking the volume that feeds everything else) or cut it to tidy up the portfolio. Either move looks sensible if you only read this one program's P&L.",
+    prompt:"Discuss and present back: Do you keep it, reprice it, or cut it? How does learner lifetime value change the picture, and what would you need to measure to be confident?",
+    starters:[
+      "What would you need to measure to know if this program is paying off elsewhere?",
+      "What happens to other programs if this one disappears?",
+      "Could repricing cost more in lost volume than it gains per learner?",
+      "Are you judging this program on its own P&L, or on what it feeds into?"
+    ],
+    principle:"Some programs earn their keep through the lifetime value of the learners they bring in, not the margin on the program itself."
+  },
+  {
+    title:"Scenario 5 — The Year-End Surplus",
+    text:"Strong demand means your area will finish the year with a $150k surplus. Mitun is pushing you to spend it now on a delivery-platform upgrade that's on the wish-list but not urgent. Tony A wants it for capability training (and lots more team lunches) that would lift quality next year. Josh wants to take it back into improving the result. It's late October and whatever spend you don't commit to by Nov 30 is no longer available.",
+    prompt:"Discuss and present back: Do you spend it, and on what — or hand it back? How do you make sure the decision reads as good stewardship rather than a year-end spend-up?",
+    starters:[
+      "What would this decision look like if the deadline didn't exist?",
+      "Which option has the clearest link to next year's delivery quality?",
+      "Is handing the surplus back actually a loss, or just a clean start?",
+      "How would you explain this decision to someone looking for a year-end spend-up?"
+    ],
+    principle:"Good stewardship looks the same in May as in October — you spend because the investment is right, not because the year is closing."
+  }
+];
+let currentScenario = 0;
+let timerSeconds = 600;
+let timerInterval = null;
+// ── STATE ───────────────────────────────────────────────────────────────────
+let scores = [0,0,0,0,0];
+let roundScores = [];           // roundScores[round][team] = points earned this round
+let currentRound = 0;           // 0-indexed, 0..4
+let roundPicks = [];            // how many picks have happened this round (0..4, then round ends)
+let usedCells = new Set();
+let currentQ = null;
+let currentAnsweringTeam = null;
+// Round order: in round r, team r picks first
+// Each round: 5 picks total, one per team, starting with team[r]
+// Pick order for round r: [r, r+1, r+2, r+3, r+4] mod 5
+function pickOrderForRound(r) {
+  return [0,1,2,3,4].map(i => (r+i)%5);
+}
+function currentPickingTeam() {
+  const order = pickOrderForRound(currentRound);
+  return order[roundPicks.length];
+}
+// ── INIT ────────────────────────────────────────────────────────────────────
+(function buildIntro(){
+  const grid = document.getElementById('teamGrid');
+  TEAMS.forEach((t,i) => {
+    const pill = document.createElement('div');
+    pill.className = 'team-pill';
+    const sw = document.createElement('div');
+    sw.className = 'team-swatch';
+    sw.style.background = t.color;
+    const info = document.createElement('div');
+    info.innerHTML = `<div class="team-pill-name">${t.name}</div>`;
+    pill.appendChild(sw); pill.appendChild(info);
+    grid.appendChild(pill);
+  });
+})();
+function startGame() {
+  scores = [0,0,0,0,0];
+  roundScores = Array.from({length:5}, () => [0,0,0,0,0]);
+  currentRound = 0;
+  roundPicks = [];
+  usedCells = new Set();
+  currentQ = null;
+  buildBoard();
+  showScreen('game');
+  updateRoundUI();
+}
+// ── BOARD ───────────────────────────────────────────────────────────────────
+function buildBoard() {
+  const grid = document.getElementById('boardGrid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const h = document.createElement('div');
+    h.className = 'cat-header';
+    h.textContent = cat.name;
+    grid.appendChild(h);
+  });
+  for (let qi=0; qi<5; qi++) {
+    CATEGORIES.forEach((cat,ci) => {
+      const q = cat.questions[qi];
+      const id = `${ci}-${qi}`;
+      const cell = document.createElement('div');
+      cell.className = 'q-cell';
+      cell.id = `cell-${id}`;
+      const v = document.createElement('div');
+      v.className = 'q-cell-val';
+      v.textContent = `$${q.points}`;
+      cell.appendChild(v);
+      cell.addEventListener('click', () => openQ(ci, qi));
+      grid.appendChild(cell);
+    });
+  }
+  renderScoreboard();
+  lockAllCells();
+}
+function lockAllCells() {
+  document.querySelectorAll('.q-cell:not(.used)').forEach(c => c.classList.add('locked'));
+}
+function unlockAll() {
+  document.querySelectorAll('.q-cell.locked').forEach(c => c.classList.remove('locked'));
+}
+function renderScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = '';
+  TEAMS.forEach((t,i) => {
+    const chip = document.createElement('div');
+    chip.className = 'score-chip'; chip.id = `chip-${i}`;
+    const dot = document.createElement('div');
+    dot.className = 'score-chip-dot'; dot.style.background = t.uiColor;
+    const name = document.createElement('span');
+    name.className = 'score-chip-name'; name.textContent = t.name;
+    const val = document.createElement('span');
+    val.className = 'score-chip-val'; val.id = `cv-${i}`; val.textContent = `$${scores[i].toLocaleString()}`;
+    chip.appendChild(dot); chip.appendChild(name); chip.appendChild(val);
+    sb.appendChild(chip);
+  });
+}
+function updateScoreChips() {
+  TEAMS.forEach((_,i) => {
+    const el = document.getElementById(`cv-${i}`);
+    if (el) el.textContent = `$${scores[i].toLocaleString()}`;
+  });
+}
+function updateRoundUI() {
+  document.getElementById('roundBadge').textContent = `ROUND ${currentRound+1} OF 5`;
+  const pickerIdx = currentPickingTeam();
+  const t = TEAMS[pickerIdx];
+  // Highlight active team chip
+  TEAMS.forEach((_,i) => {
+    const c = document.getElementById(`chip-${i}`);
+    if (c) c.classList.toggle('active-round', i===pickerIdx);
+  });
+  // Turn banner
+  const banner = document.getElementById('turnBanner');
+  banner.className = 'turn-banner show';
+  banner.style.background = t.uiColor + '22';
+  banner.style.borderColor = t.uiColor + '55';
+  banner.style.color = t.uiColor;
+  const pickNum = roundPicks.length + 1;
+  banner.innerHTML = `<span style="font-size:22px">●</span>&nbsp;Pick ${pickNum} of 5 &mdash; <strong>${t.name}</strong> chooses`;
+  // Selection prompt
+  const catNames = CATEGORIES.map(c => c.name.replace('\n',' '));
+  const exampleCat = catNames[pickerIdx % catNames.length];
+  const examplePts = [200,400,600,800,1000][pickerIdx % 5];
+  document.getElementById('selectionPrompt').innerHTML =
+    `Say it like this: <strong style="color:${t.uiColor}">"The ${t.name} team will take ${exampleCat} for $${examplePts}, thanks Josh."</strong>`;
+  unlockAll();
+}
+// ── MODAL ───────────────────────────────────────────────────────────────────
+function openQ(ci, qi) {
+  const id = `${ci}-${qi}`;
+  const cell = document.getElementById(`cell-${id}`);
+  if (!cell || cell.classList.contains('used') || cell.classList.contains('locked')) return;
+  currentQ = { ci, qi, id };
+  currentAnsweringTeam = currentPickingTeam();
+  const cat = CATEGORIES[ci], q = cat.questions[qi];
+  const t = TEAMS[currentAnsweringTeam];
+  document.getElementById('modalCat').textContent = cat.name.replace('\n',' ');
+  document.getElementById('modalPoints').textContent = `$${q.points}`;
+  document.getElementById('modalClue').textContent = q.q;
+  document.getElementById('modalAnswer').textContent = q.a;
+  document.getElementById('modalNote').textContent = q.note || '';
+  const sw = document.getElementById('answeringSwatch');
+  sw.style.background = t.color;
+  document.getElementById('answeringName').textContent = `Team ${t.name}`;
+  document.getElementById('answeringName').style.color = t.uiColor;
+  document.getElementById('answerWrap').classList.remove('revealed');
+  document.getElementById('revealWrap').style.display = 'block';
+  // Lock board while question open
+  lockAllCells();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function revealAnswer() {
+  document.getElementById('revealWrap').style.display = 'none';
+  document.getElementById('answerWrap').classList.add('revealed');
+}
+function score(correct) {
+  const pts = CATEGORIES[currentQ.ci].questions[currentQ.qi].points;
+  const ti = currentAnsweringTeam;
+  if (correct) {
+    scores[ti] += pts;
+    roundScores[currentRound][ti] += pts;
+    showToast(`+$${pts} — Team ${TEAMS[ti].name}!`);
+  } else {
+    const deduct = Math.min(scores[ti], pts);
+    scores[ti] -= deduct;
+    roundScores[currentRound][ti] -= pts;
+    showToast(`-$${pts} — Team ${TEAMS[ti].name}`);
+  }
+  updateScoreChips();
+  markUsed(currentQ.id);
+  closeModal();
+  advancePick();
+}
+function skipQ() {
+  if (currentQ) markUsed(currentQ.id);
+  closeModal();
+  advancePick();
+}
+function markUsed(id) {
+  usedCells.add(id);
+  const cell = document.getElementById(`cell-${id}`);
+  if (cell) { cell.classList.add('used'); cell.classList.remove('locked'); }
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  currentQ = null;
+  currentAnsweringTeam = null;
+  // Re-apply lock/unlock state
+  if (roundPicks.length < 5) updateRoundUI();
+}
+function advancePick() {
+  roundPicks.push(1);
+  if (roundPicks.length >= 5) {
+    // Round over
+    lockAllCells();
+    setTimeout(showRoundSummary, 400);
+  } else {
+    updateRoundUI();
+  }
+}
+// ── ROUND SUMMARY ───────────────────────────────────────────────────────────
+function showRoundSummary() {
+  document.getElementById('rsRoundLabel').textContent = `AFTER ROUND ${currentRound+1} OF 5`;
+  const earned = roundScores[currentRound];
+  const maxScore = Math.max(...scores, 1);
+  const earnedMax = Math.max(...earned.map(Math.abs), 1);
+  // Bar chart — cumulative scores
+  const chart = document.getElementById('rsChart');
+  chart.innerHTML = '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:3px;color:var(--silver);margin-bottom:16px">TOTAL SCORES</div>';
+  const sortedIdxs = [0,1,2,3,4].sort((a,b) => scores[b]-scores[a]);
+  sortedIdxs.forEach(i => {
+    const t = TEAMS[i];
+    const pct = Math.max(4, (scores[i]/maxScore)*100);
+    const row = document.createElement('div');
+    row.className = 'chart-row';
+    row.innerHTML = `
+      <div class="chart-label" style="color:${t.uiColor}">${t.name}</div>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="width:0%;background:${t.color}">
+          <span class="chart-bar-val" style="color:${t.textColor}">$${scores[i].toLocaleString()}</span>
+        </div>
+      </div>`;
+    chart.appendChild(row);
+    // Animate after paint
+    setTimeout(() => {
+      row.querySelector('.chart-bar-fill').style.width = pct + '%';
+    }, 80);
+  });
+  // Earned this round summary
+  const earnedParts = TEAMS.map((t,i) => {
+    const v = roundScores[currentRound][i];
+    if (v===0) return null;
+    const sign = v>0?'+':'';
+    return `<span style="color:${t.uiColor};font-weight:600">${t.name}: ${sign}$${v.toLocaleString()}</span>`;
+  }).filter(Boolean);
+  document.getElementById('rsEarned').innerHTML = earnedParts.length
+    ? 'This round: ' + earnedParts.join(' &nbsp;|&nbsp; ')
+    : 'No points scored this round';
+  const isLast = currentRound >= 4;
+  const btn = document.getElementById('btnNextRound');
+  const hint = document.getElementById('nextRoundHint');
+  btn.textContent = isLast ? 'SEE FINAL RESULTS' : `START ROUND ${currentRound+2} →`;
+  if (!isLast) {
+    const nextStarter = TEAMS[(currentRound+1)%5];
+    hint.innerHTML = `Round ${currentRound+2} starts with <span style="color:${nextStarter.uiColor};font-weight:600">Team ${nextStarter.name}</span>`;
+  } else {
+    hint.textContent = '';
+  }
+  showScreen('roundSummary');
+}
+function nextRound() {
+  if (currentRound >= 4) {
+    showWinner();
+    return;
+  }
+  currentRound++;
+  roundPicks = [];
+  showScreen('game');
+  updateRoundUI();
+}
+// ── WINNER ──────────────────────────────────────────────────────────────────
+function showWinner() {
+  const maxScore = Math.max(...scores);
+  const winnerIdx = scores.indexOf(maxScore);
+  const wt = TEAMS[winnerIdx];
+  document.getElementById('winnerName').textContent = `Team ${wt.name}`;
+  document.getElementById('winnerName').style.color = wt.uiColor;
+  const fc = document.getElementById('finalChart');
+  fc.innerHTML = '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:3px;color:var(--silver);margin-bottom:16px">FINAL SCORES</div>';
+  const sortedIdxs = [0,1,2,3,4].sort((a,b) => scores[b]-scores[a]);
+  sortedIdxs.forEach((i,rank) => {
+    const t = TEAMS[i];
+    const pct = Math.max(4, (scores[i]/maxScore)*100);
+    const row = document.createElement('div');
+    row.className = 'chart-row';
+    const medal = rank===0?'🥇':rank===1?'🥈':rank===2?'🥉':'';
+    row.innerHTML = `
+      <div class="chart-label" style="color:${t.uiColor}">${medal}${t.name}</div>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="width:0%;background:${t.color}">
+          <span class="chart-bar-val" style="color:${t.textColor}">$${scores[i].toLocaleString()}</span>
+        </div>
+      </div>`;
+    fc.appendChild(row);
+    setTimeout(() => { row.querySelector('.chart-bar-fill').style.width = pct+'%'; }, 80);
+  });
+  showScreen('winner');
+  launchConfetti();
+}
+function restart() {
+  showScreen('intro');
+}
+// ── SHOW ME THE MONEY ───────────────────────────────────────────────────────
+function startScenarios() {
+  const grid = document.getElementById('assignGrid');
+  grid.innerHTML = '';
+  TEAMS.forEach((t,i) => {
+    const pill = document.createElement('button');
+    pill.className = 'assign-pill';
+    pill.style.cursor = 'pointer';
+    pill.style.border = 'none';
+    pill.style.width = '100%';
+    pill.style.font = 'inherit';
+    pill.style.textAlign = 'left';
+    pill.onclick = () => openScenario(i);
+    const sw = document.createElement('div');
+    sw.className = 'assign-swatch';
+    sw.style.background = t.color;
+    const info = document.createElement('div');
+    info.innerHTML = `<div class="team-pill-name" style="color:${t.uiColor}">Team ${t.name}</div><div class="assign-num">${SCENARIOS[i].title.split('—')[0].trim()} →</div>`;
+    pill.appendChild(sw); pill.appendChild(info);
+    grid.appendChild(pill);
+  });
+  showScreen('scenariosIntro');
+}
+function openScenario(i) {
+  currentScenario = i;
+  const t = TEAMS[i];
+  const s = SCENARIOS[i];
+  const badge = document.getElementById('scTeamBadge');
+  badge.textContent = `Team ${t.name}`;
+  badge.style.background = t.uiColor + '22';
+  badge.style.border = `1px solid ${t.uiColor}55`;
+  badge.style.color = t.uiColor;
+  document.getElementById('scTitle').textContent = s.title;
+  document.getElementById('scText').textContent = s.text;
+  document.getElementById('scPrompt').textContent = s.prompt;
+  const hintBox = document.getElementById('scHintBox');
+  hintBox.className = 'hint-box';
+  hintBox.innerHTML = '';
+  renderHintButtons(i);
+  renderThoughts();
+  document.getElementById('thoughtInput').value = '';
+  timerReset();
+  showScreen('scenario');
+  startThoughtsPolling();
+}
+function renderHintButtons(i) {
+  const s = SCENARIOS[i];
+  const wrap = document.getElementById('hintButtons');
+  wrap.innerHTML = '';
+  s.starters.forEach((starter, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'hint-btn';
+    btn.textContent = `HINT ${idx+1}`;
+    btn.onclick = () => revealStarter(idx, btn);
+    wrap.appendChild(btn);
+  });
+}
+function revealStarter(idx, btn) {
+  const s = SCENARIOS[currentScenario];
+  const hintBox = document.getElementById('scHintBox');
+  if (!hintBox.classList.contains('show')) {
+    hintBox.innerHTML = '<div class="hint-label">CONVERSATION STARTERS</div>';
+    hintBox.classList.add('show');
+  }
+  const item = document.createElement('div');
+  item.className = 'hint-item';
+  item.textContent = `${idx+1}. ${s.starters[idx]}`;
+  hintBox.appendChild(item);
+  btn.classList.add('used');
+  btn.disabled = true;
+}
+// ── TEAM THOUGHTS (synced via Netlify Blobs so the host can view any team's page) ──
+const THOUGHTS_API = '/.netlify/functions/thoughts';
+let thoughtsPollInterval = null;
+let thoughtsCache = [];
+
+function renderThoughtList(list) {
+  thoughtsCache = list;
+  const wrap = document.getElementById('thoughtList');
+  wrap.innerHTML = '';
+  if (list.length === 0) {
+    wrap.innerHTML = '<div class="thought-empty">No thoughts yet — type your first one above.</div>';
+    return;
+  }
+  list.forEach((text, idx) => {
+    const item = document.createElement('div');
+    item.className = 'thought-item';
+    const span = document.createElement('div');
+    span.className = 'ti-text';
+    span.textContent = text;
+    const del = document.createElement('button');
+    del.className = 'ti-del';
+    del.textContent = '✕';
+    del.onclick = () => deleteThought(idx);
+    item.appendChild(span);
+    item.appendChild(del);
+    wrap.appendChild(item);
+  });
+}
+async function renderThoughts() {
+  try {
+    const res = await fetch(`${THOUGHTS_API}?team=${currentScenario}`);
+    const data = await res.json();
+    renderThoughtList(data.thoughts || []);
+  } catch(e) {
+    // Offline or function unavailable — show what we last had
+    renderThoughtList(thoughtsCache);
+  }
+}
+async function addThought() {
+  const input = document.getElementById('thoughtInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  try {
+    const res = await fetch(THOUGHTS_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: currentScenario, text })
+    });
+    const data = await res.json();
+    renderThoughtList(data.thoughts || []);
+  } catch(e) {
+    showToast('Couldn\'t save — check connection and try again');
+  }
+  input.focus();
+}
+async function deleteThought(idx) {
+  try {
+    const res = await fetch(THOUGHTS_API, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: currentScenario, idx })
+    });
+    const data = await res.json();
+    renderThoughtList(data.thoughts || []);
+  } catch(e) {
+    showToast('Couldn\'t delete — check connection and try again');
+  }
+}
+function startThoughtsPolling() {
+  stopThoughtsPolling();
+  thoughtsPollInterval = setInterval(renderThoughts, 4000);
+}
+function stopThoughtsPolling() {
+  if (thoughtsPollInterval) {
+    clearInterval(thoughtsPollInterval);
+    thoughtsPollInterval = null;
+  }
+}
+function showScenariosSummary() {
+  timerPause();
+  const list = document.getElementById('principleList');
+  list.innerHTML = '';
+  SCENARIOS.forEach((s,i) => {
+    const t = TEAMS[i];
+    const item = document.createElement('div');
+    item.className = 'principle-item';
+    item.innerHTML = `<span class="pr-num" style="color:${t.uiColor}">${s.title} — Team ${t.name}</span><strong>Principle:</strong> ${s.principle}`;
+    list.appendChild(item);
+  });
+  showScreen('scenariosSummary');
+}
+// ── SCENARIO TIMER ───────────────────────────────────────────────────────────
+function timerTick() {
+  if (timerSeconds <= 0) {
+    timerPause();
+    showToast("Time's up!");
+    return;
+  }
+  timerSeconds--;
+  updateTimerDisplay();
+}
+function timerStart() {
+  if (timerInterval) return;
+  timerInterval = setInterval(timerTick, 1000);
+}
+function timerPause() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+function timerReset() {
+  timerPause();
+  timerSeconds = 600;
+  updateTimerDisplay();
+}
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds/60);
+  const sec = timerSeconds%60;
+  document.getElementById('scTimer').textContent = `${m}:${sec.toString().padStart(2,'0')}`;
+}
+// ── UTILS ────────────────────────────────────────────────────────────────────
+function showScreen(id) {
+  if (id !== 'scenario') stopThoughtsPolling();
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+function launchConfetti() {
+  const cols = TEAMS.map(t=>t.color).concat(['#FAC800','#fff']);
+  for (let i=0;i<80;i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random()*100+'vw';
+    el.style.background = cols[Math.floor(Math.random()*cols.length)];
+    el.style.width = (6+Math.random()*8)+'px';
+    el.style.height = (6+Math.random()*8)+'px';
+    el.style.animationDuration = (2+Math.random()*3)+'s';
+    el.style.animationDelay = (Math.random()*2)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),6000);
+  }
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target.id==='modalOverlay') closeModal(); });
+</script>
+</body>
+</html>
