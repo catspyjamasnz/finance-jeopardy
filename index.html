@@ -44,7 +44,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .team-swatch{width:28px;height:28px;border-radius:6px;flex-shrink:0;}
 .team-pill-name{font-weight:600;font-size:15px;}
 .team-pill-label{font-size:12px;color:var(--silver);margin-top:1px;}
-.rules-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
+.rules-section-label{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:4px;color:var(--rmit-azure);text-transform:uppercase;margin-bottom:10px;margin-top:4px;}
+.answer-format-box{background:rgba(0,170,255,.07);border:1px solid rgba(0,170,255,.25);border-radius:10px;padding:16px 18px;font-size:14px;color:var(--silver);line-height:1.6;margin-bottom:28px;text-align:center;}
+.answer-format-example{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white);}
+.answer-format-worked{margin-top:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px 16px;text-align:left;display:flex;flex-direction:column;gap:6px;}
+.awl-label{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:4px;color:var(--rmit-azure);margin-bottom:2px;}
+.awl-clue{font-size:13px;color:var(--silver);line-height:1.5;}
+.awl-arrow{font-size:16px;color:rgba(255,255,255,.3);padding-left:4px;}
+.awl-answer{font-size:13px;color:var(--green);line-height:1.5;}
+.rules-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
 .how-to-participate{background:rgba(0,170,255,.08);border:1px solid rgba(0,170,255,.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:24px;}
 .how-to-participate-label{font-family:'Bebas Neue',sans-serif;letter-spacing:4px;font-size:13px;color:var(--silver);text-transform:uppercase;margin-bottom:8px;}
 .how-to-participate-step{font-size:14px;color:var(--white);margin-bottom:14px;}
@@ -65,6 +73,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .game-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--white);}
 .round-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--rmit-azure);}
 .scoreboard{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-help{border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;padding:6px 14px;cursor:pointer;flex-shrink:0;align-self:center;transition:background .2s,border-color .2s;}
+.btn-help:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);}
+/* ─── HELP MODAL ─── */
+.help-modal{max-width:580px;}
+.help-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--white);margin-bottom:22px;text-align:center;}
+.help-item{display:flex;gap:14px;margin-bottom:20px;align-items:flex-start;}
+.help-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--rmit-azure);flex-shrink:0;line-height:1.2;}
+.help-body{font-size:15px;color:var(--silver);line-height:1.6;}
+.help-body strong{color:var(--white);}
+.help-example{display:inline-block;margin-top:8px;padding:10px 16px;background:rgba(0,170,255,.1);border:1px solid rgba(0,170,255,.3);border-radius:8px;font-size:15px;color:var(--white);font-style:italic;line-height:1.5;}
+.help-answer{display:inline-block;margin-top:8px;padding:10px 16px;background:rgba(250,200,0,.08);border:1px solid rgba(250,200,0,.3);border-radius:8px;font-size:15px;color:var(--gold-light);font-style:italic;}
+.help-correct{color:var(--green);font-weight:700;}
+.help-wrong{color:var(--rmit-red);font-weight:700;}
 .score-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:30px;padding:7px 16px 7px 11px;font-size:13px;font-weight:400;transition:all .3s;}
 .score-chip.active-round{border-color:var(--gold);background:rgba(250,200,0,.12);box-shadow:0 0 12px rgba(250,200,0,.2);}
 .score-chip-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0;}
@@ -272,15 +293,26 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div class="logo-title">Finance Jeopardy</div>
   <div class="logo-sub">We Lead - Finance</div>
   <div class="intro-card">
-    <h2>The Teams</h2>
+    <h2>Meet the Teams</h2>
     <div class="team-grid" id="teamGrid"></div>
+    <div class="rules-section-label">How a round works</div>
     <ul class="rules-list">
       <li>5 rounds — each team starts one round and picks first</li>
       <li>Then the other 4 teams each pick one clue in that round</li>
-      <li>Respond with a question: "What is...?" or "Who is...?"</li>
       <li>Correct = earn the points. Wrong = lose the points</li>
       <li>Scores shown after every round</li>
     </ul>
+    <div class="rules-section-label">How to answer</div>
+    <div class="answer-format-box">
+      Josh reads a clue as a statement. Your team responds in the form of a question:<br><br>
+      <span class="answer-format-example">"What is...?" &nbsp;or&nbsp; "Who is...?"</span>
+      <div class="answer-format-worked">
+        <div class="awl-label">EXAMPLE</div>
+        <div class="awl-clue">💬 <em>"This is the document that shows whether a business made a profit or a loss over a period of time."</em></div>
+        <div class="awl-arrow">↓</div>
+        <div class="awl-answer">✅ <em>"What is a Profit &amp; Loss statement?"</em></div>
+      </div>
+    </div>
     <button class="btn-start" onclick="startGame()">LET'S PLAY</button>
   </div>
 </div>
@@ -599,7 +631,7 @@ function currentPickingTeam() {
     sw.className = 'team-swatch';
     sw.style.background = t.color;
     const info = document.createElement('div');
-    info.innerHTML = `<div class="team-pill-name">${t.name}</div>`;
+    info.innerHTML = `<div class="team-pill-name">Team ${t.name}</div>`;
     pill.appendChild(sw); pill.appendChild(info);
     grid.appendChild(pill);
   });
@@ -744,6 +776,12 @@ function score(correct) {
 }
 // ── QR MODAL ────────────────────────────────────────────────────────────────
 let qrRendered = false;
+function openHelpModal() {
+  document.getElementById('helpModalOverlay').classList.add('open');
+}
+function closeHelpModal() {
+  document.getElementById('helpModalOverlay').classList.remove('open');
+}
 function openQrModal() {
   if (!qrRendered) {
     new QRCode(document.getElementById('qrCodeWrap'), {
