@@ -364,7 +364,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <div class="step-label">STEP 2 · NEXT 5 MINUTES</div>
       <div class="step-sub" id="scStep2Sub">Now frame your recommendation. What would you tell the Finance team to do, and why?</div>
       <div class="recommendation-box">
-        <textarea id="recommendationInput" rows="4" placeholder="Our recommendation to Finance is…" oninput="queueSaveAnswers()" onblur="saveAnswers()"></textarea>
+        <div class="thought-input-row">
+          <textarea id="recommendationInput" rows="3" placeholder="Our recommendation to Finance is…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addRecommendation();}"></textarea>
+          <button class="btn btn-correct" onclick="addRecommendation()">ADD</button>
+        </div>
+        <div class="thought-list" id="recommendationList"></div>
       </div>
     </div>
     <div class="thoughts-section">
@@ -928,14 +932,25 @@ function renderStarterQuestions(i) {
     const label = document.createElement('div');
     label.className = 'starter-q-text';
     label.textContent = `${idx+1}. ${question}`;
+    const inputRow = document.createElement('div');
+    inputRow.className = 'thought-input-row';
     const ta = document.createElement('textarea');
-    ta.id = `answer${idx}`;
+    ta.id = `answerInput${idx}`;
     ta.rows = 2;
-    ta.placeholder = 'Type your answer…';
-    ta.oninput = queueSaveAnswers;
-    ta.onblur = saveAnswers;
+    ta.placeholder = 'Type your answer, then tap Add…';
+    ta.onkeydown = (e) => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addAnswer(idx);} };
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-correct';
+    btn.textContent = 'ADD';
+    btn.onclick = () => addAnswer(idx);
+    inputRow.appendChild(ta);
+    inputRow.appendChild(btn);
+    const listDiv = document.createElement('div');
+    listDiv.className = 'thought-list';
+    listDiv.id = `answerList${idx}`;
     block.appendChild(label);
-    block.appendChild(ta);
+    block.appendChild(inputRow);
+    block.appendChild(listDiv);
     wrap.appendChild(block);
   });
 }
@@ -967,16 +982,21 @@ function renderThoughtList(list) {
     wrap.appendChild(item);
   });
 }
-let answersCache = ["", "", ""];
-let recommendationCache = "";
+let answersCache = [[], [], []];
+let recommendationCache = [];
 
 async function renderThoughts() {
   try {
     const res = await fetch(`${THOUGHTS_API}?team=${currentScenario}`);
     const data = await res.json();
     renderThoughtList(data.thoughts || []);
-    answersCache = data.answers || ["", "", ""];
-    recommendationCache = data.recommendation || "";
+    // Migrate old string-based answers to array-of-arrays
+    let rawAnswers = data.answers || [[], [], []];
+    if (!Array.isArray(rawAnswers)) rawAnswers = [[], [], []];
+    answersCache = rawAnswers.map(a => Array.isArray(a) ? a : (a ? [a] : []));
+    // Migrate old string-based recommendation to array
+    let rawRec = data.recommendation || [];
+    recommendationCache = Array.isArray(rawRec) ? rawRec : (rawRec ? [rawRec] : []);
     applyAnswers();
   } catch(e) {
     // Offline or function unavailable — show what we last had
@@ -985,11 +1005,55 @@ async function renderThoughts() {
 }
 function applyAnswers() {
   for (let idx = 0; idx < 3; idx++) {
-    const ta = document.getElementById(`answer${idx}`);
-    if (ta && document.activeElement !== ta) ta.value = answersCache[idx] || '';
+    renderAnswerList(idx, answersCache[idx] || []);
   }
-  const rec = document.getElementById('recommendationInput');
-  if (rec && document.activeElement !== rec) rec.value = recommendationCache || '';
+  renderRecommendationList(recommendationCache || []);
+}
+function renderAnswerList(qIdx, list) {
+  const wrap = document.getElementById(`answerList${qIdx}`);
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (list.length === 0) {
+    wrap.innerHTML = '<div class="thought-empty">No answers yet — type one above and tap Add.</div>';
+    return;
+  }
+  list.forEach((text, idx) => {
+    const item = document.createElement('div');
+    item.className = 'thought-item';
+    const span = document.createElement('div');
+    span.className = 'ti-text';
+    span.textContent = text;
+    const del = document.createElement('button');
+    del.className = 'ti-del';
+    del.textContent = '✕';
+    del.onclick = () => deleteAnswer(qIdx, idx);
+    item.appendChild(span);
+    item.appendChild(del);
+    wrap.appendChild(item);
+  });
+}
+function renderRecommendationList(list) {
+  const wrap = document.getElementById('recommendationList');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (list.length === 0) {
+    wrap.innerHTML = '<div class="thought-empty">No recommendation yet — type one above and tap Add.</div>';
+    return;
+  }
+  list.forEach((text, idx) => {
+    const item = document.createElement('div');
+    item.className = 'thought-item';
+    const span = document.createElement('div');
+    span.className = 'ti-text';
+    span.textContent = text;
+    const del = document.createElement('button');
+    del.className = 'ti-del';
+    del.textContent = '✕';
+    del.onclick = () => deleteRecommendation(idx);
+    item.appendChild(span);
+    item.appendChild(del);
+    wrap.appendChild(item);
+  });
 }
 let saveAnswersTimeout = null;
 function queueSaveAnswers() {
@@ -998,19 +1062,57 @@ function queueSaveAnswers() {
 }
 async function saveAnswers() {
   if (saveAnswersTimeout) { clearTimeout(saveAnswersTimeout); saveAnswersTimeout = null; }
-  const answers = [0,1,2].map(idx => document.getElementById(`answer${idx}`)?.value || '');
-  const recommendation = document.getElementById('recommendationInput')?.value || '';
-  answersCache = answers;
-  recommendationCache = recommendation;
   try {
     await fetch(THOUGHTS_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ team: currentScenario, answers, recommendation })
+      body: JSON.stringify({ team: currentScenario, answers: answersCache, recommendation: recommendationCache })
     });
   } catch(e) {
     showToast('Couldn\'t save — check connection and try again');
   }
+}
+async function addAnswer(qIdx) {
+  const input = document.getElementById(`answerInput${qIdx}`);
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  if (!Array.isArray(answersCache[qIdx])) answersCache[qIdx] = [];
+  answersCache[qIdx] = [...answersCache[qIdx], text];
+  renderAnswerList(qIdx, answersCache[qIdx]);
+  stopThoughtsPolling();
+  await saveAnswers();
+  startThoughtsPolling();
+  input.focus();
+}
+async function deleteAnswer(qIdx, itemIdx) {
+  if (!confirm('Delete this answer? This can\'t be undone.')) return;
+  answersCache[qIdx] = (answersCache[qIdx] || []).filter((_,i) => i !== itemIdx);
+  renderAnswerList(qIdx, answersCache[qIdx]);
+  stopThoughtsPolling();
+  await saveAnswers();
+  startThoughtsPolling();
+}
+async function addRecommendation() {
+  const input = document.getElementById('recommendationInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  if (!Array.isArray(recommendationCache)) recommendationCache = [];
+  recommendationCache = [...recommendationCache, text];
+  renderRecommendationList(recommendationCache);
+  stopThoughtsPolling();
+  await saveAnswers();
+  startThoughtsPolling();
+  input.focus();
+}
+async function deleteRecommendation(idx) {
+  if (!confirm('Delete this recommendation? This can\'t be undone.')) return;
+  recommendationCache = (recommendationCache || []).filter((_,i) => i !== idx);
+  renderRecommendationList(recommendationCache);
+  stopThoughtsPolling();
+  await saveAnswers();
+  startThoughtsPolling();
 }
 async function addThought() {
   const input = document.getElementById('thoughtInput');
