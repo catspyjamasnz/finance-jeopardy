@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Finance Jeopardy – RMIT Senior Leadership</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,wght@0,400;0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root {
   --deep:#04041a; --navy:#000054;
@@ -44,6 +45,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .team-pill-name{font-weight:600;font-size:15px;}
 .team-pill-label{font-size:12px;color:var(--silver);margin-top:1px;}
 .rules-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
+.how-to-participate{background:rgba(0,170,255,.08);border:1px solid rgba(0,170,255,.3);border-radius:12px;padding:20px;text-align:center;margin-bottom:24px;}
+.how-to-participate-label{font-family:'Bebas Neue',sans-serif;letter-spacing:4px;font-size:13px;color:var(--silver);text-transform:uppercase;margin-bottom:8px;}
+.how-to-participate-step{font-size:14px;color:var(--white);margin-bottom:14px;}
+.btn-qr-launch{font-size:12px;padding:8px 18px;}
+.qr-modal{max-width:520px;text-align:center;}
+.qr-modal-title{font-family:'Bebas Neue',sans-serif;letter-spacing:4px;font-size:24px;color:var(--white);margin-bottom:24px;text-transform:uppercase;}
+.qr-modal-code{display:flex;justify-content:center;align-items:center;background:#fff;border-radius:16px;padding:24px;margin:0 auto 28px;width:fit-content;}
+.qr-modal-url{font-family:'Anton',sans-serif;font-size:clamp(28px,6vw,44px);letter-spacing:2px;color:var(--rmit-azure);word-break:break-all;line-height:1.3;}
+.qr-modal-step{font-size:15px;color:var(--silver);margin-top:14px;}
 .rules-list li{font-size:14px;color:var(--silver);padding-left:20px;position:relative;line-height:1.5;}
 .rules-list li::before{content:'→';position:absolute;left:0;color:var(--white);}
 .btn-start{width:100%;background:linear-gradient(135deg,var(--rmit-red),#ff3355);color:#fff;border:none;border-radius:10px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;cursor:pointer;transition:transform .15s,filter .15s;filter:drop-shadow(0 4px 20px rgba(230,0,40,.4));}
@@ -52,7 +62,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 #game{flex-direction:column;}
 .game-header{background:linear-gradient(180deg,var(--deep),transparent);padding:12px 22px 12px;border-bottom:1px solid rgba(230,0,40,.15);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;flex-shrink:0;}
 .game-title-wrap{display:flex;flex-direction:column;}
-.game-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;background:linear-gradient(135deg,var(--rmit-red),#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.game-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--white);}
 .round-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:var(--rmit-azure);}
 .scoreboard{display:flex;gap:8px;flex-wrap:wrap;}
 .score-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:30px;padding:6px 14px 6px 9px;font-size:13px;font-weight:400;transition:all .3s;}
@@ -260,8 +270,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 <div id="intro" class="screen">
   <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><span class="crumb-current">Finance Jeopardy</span></div>
   <div class="logo-title">Finance Jeopardy</div>
-  <div class="logo-sub">Senior Leadership Edition</div>
-  <div class="rmit-tag">RMIT University</div>
+  <div class="logo-sub">We Lead - Finance</div>
   <div class="intro-card">
     <h2>The Teams</h2>
     <div class="team-grid" id="teamGrid"></div>
@@ -313,11 +322,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><span class="crumb-current">Show Me The Money</span></div>
   <div class="logo-title">Show Me The Money!!</div>
   <div class="logo-sub">Scenario Challenge</div>
-  <div class="rmit-tag">RMIT University</div>
   <div class="intro-card">
-    <h2>Tap Your Team</h2>
-    <p style="text-align:center;font-size:13px;color:var(--silver);margin-bottom:8px;">Each team has its own scenario — tap your team's button to open it on your phone.</p>
-    <p style="text-align:center;font-size:13px;color:var(--silver);margin-bottom:20px;">On your own phone or laptop, go to <strong style="color:var(--rmit-azure);letter-spacing:1px;">weleadfinance.netlify.app</strong> and choose Activity 2.</p>
+    <h2>Complete Your Team Scenario</h2>
+    <p style="text-align:center;font-size:13px;color:var(--silver);margin-bottom:20px;">Each team has its own scenario to work through. You will have a few questions to answer and a recommendation to make. You will have 10 minutes.</p>
+    <div class="how-to-participate">
+      <div class="how-to-participate-label">How to participate</div>
+      <div class="how-to-participate-step">You can participate from your laptop or from your phone.</div>
+      <button class="btn btn-secondary btn-qr-launch" onclick="openQrModal()">Launch QR Code</button>
+    </div>
     <div class="timer-row" style="justify-content:center;margin-bottom:24px;">
       <div class="timer-display" id="scTimer">10:00</div>
       <button class="btn btn-secondary" onclick="timerStart()">START</button>
@@ -349,7 +361,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     </div>
     <div class="step-block">
       <div class="step-label">STEP 2 · NEXT 5 MINUTES</div>
-      <div class="step-sub">Now frame your recommendation. What would you tell the Finance team to do, and why?</div>
+      <div class="step-sub" id="scStep2Sub">Now frame your recommendation. What would you tell the Finance team to do, and why?</div>
       <div class="recommendation-box">
         <textarea id="recommendationInput" rows="4" placeholder="Our recommendation to Finance is…" oninput="queueSaveAnswers()" onblur="saveAnswers()"></textarea>
       </div>
@@ -414,12 +426,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     </div>
   </div>
 </div>
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qrModalOverlay">
+  <div class="modal qr-modal">
+    <button class="modal-close" onclick="closeQrModal()">✕</button>
+    <div class="qr-modal-title">Scan to Join</div>
+    <div class="qr-modal-code" id="qrCodeWrap"></div>
+    <div class="qr-modal-url">weleadfinance.netlify.app</div>
+    <div class="qr-modal-step">Choose Activity 2, then tap your team's colour</div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <script>
 // ── RMIT TEAMS ──────────────────────────────────────────────────────────────
 const TEAMS = [
   { name:'Red',    color:'#E60028', uiColor:'#E60028', textColor:'#fff' },
-  { name:'Blue',   color:'#000054', uiColor:'#5577FF', textColor:'#fff' },
+  { name:'Blue',   color:'#000054', uiColor:'#7C9BFF', textColor:'#fff' },
   { name:'Orange', color:'#FC9147', uiColor:'#FC9147', textColor:'#000' },
   { name:'Teal',   color:'#7AE1AA', uiColor:'#7AE1AA', textColor:'#000' },
   { name:'Azure',  color:'#00AAFF', uiColor:'#00AAFF', textColor:'#000' },
@@ -481,64 +503,59 @@ const CATEGORIES = [
 // One scenario per team, mapped by index (Red, Blue, Orange, Teal, Azure)
 const SCENARIOS = [
   {
-    title:"Scenario 1 — The Mid-Year Over-Enrolment",
-    text:"Your program launched in February with a budgeted intake of 120 students. By the March census you have 165 enrolled — a 38% over-enrolment. Great news for revenue, but your teaching team is already at capacity, student satisfaction scores are dipping, and two facilitators have flagged burnout. You have unspent budget in non-essential project work (a planned process-improvement initiative that hasn't started) but no line for additional teaching staff.",
-    prompt:"Discuss and present back: Do you spend to protect quality now, bank the upside, or something in between? What do you ask Finance to flex, and what's the risk of getting this wrong in either direction?",
+    title:"Scenario 1 — The Karaoke Bar",
+    text:"Neon Pipes karaoke bar runs on Friday and Saturday nights, built entirely around DJ Weak Latte who has 14,000 Instagram followers. This quarter revenue is 20% under target — three corporate bookings cancelled. The owner needs to find savings. DJ Weak Latte costs $800/night. The cocktail menu reprint would save $2,000. The neon sign maintenance is locked in for 12 months. Staff wages are $1,200/night. The Instagram influencer partnership that brought in the corporate bookings costs $600/month.",
+    prompt:"Now frame your recommendation. What would you tell the owner to do, and why?",
     starters:[
-      "What does the extra revenue actually cost you to deliver well?",
-      "Is there money already in your budget that could be redirected to teaching support?",
-      "What happens to satisfaction scores and word-of-mouth if quality slips this term?",
-      "Where's the line between protecting quality and overspending on a cohort that's already enrolled?"
+      "Go through each cost. Which ones can you actually stop right now — and which are already locked in whether you like it or not?",
+      "If you cut DJ Weak Latte to save $1,600 a week — what happens to Friday and Saturday night revenue?",
+      "The corporate bookings that cancelled were brought in through the influencer partnership. If you pause that too — what does next quarter's pipeline look like?"
     ],
-    principle:"Revenue you can't deliver on well isn't a win — and a budget line is a plan, not a rule."
+    principle:"Before you cut anything, ask two questions: can you actually stop it right now — and is the saving real, or are you just moving the cost to next year?"
   },
   {
-    title:"Scenario 2 — The Forecast That Says “Cut”",
-    text:"Mid-year, Finance shares a forecast showing your portfolio will land 15% under revenue — a couple of external corporate opportunities slipped and a program under-filled. You're asked to find savings to partially close the gap. Your costs are roughly: 55% people (including sessional facilitators), 20% platform and IT, 15% marketing, 10% other. Cutting facilitators hits delivery quality; cutting marketing risks the back-half pipeline; the platform costs are committed.",
-    prompt:"Discuss and present back: Where do you find the savings, and what do you protect at all costs? Which “saving” is actually just deferring a cost into next year?",
+    title:"Scenario 2 — The Cake Shop",
+    text:"Batter Up Cake Shop has received 300 unexpected enquiries for Pauline Hanson face cakes. Option A: build — hire a sculptor, 10 weeks, $22,000, you own the mould forever. Option B: buy — licence a mould from a Geelong supplier, ready in 10 days, $14,000 upfront plus $3 per cake royalty, no ownership. A Fitzroy competitor just posted on Instagram hinting at something big involving Clive Palmer.",
+    prompt:"Now frame your recommendation. What would you tell the owner to do, and why?",
     starters:[
-      "Which of your costs are committed versus discretionary right now?",
-      "What happens next year if you cut marketing to fix this year's gap?",
-      "Is a 'saving' really gone for good, or just pushed into next year?",
-      "Which costs will shrink on their own as cohorts shrink, without you having to act?"
+      "How long do you think the demand for Pauline Hanson face cakes will last — weeks, months, or years? Does your answer change which option you choose?",
+      "If the Fitzroy competitor launches in three weeks and you're still training your sculptor — what does that mean for your 300 enquiries?",
+      "Is there a way to licence now to capture the demand, and then build your own mould once you know how many cakes you're actually selling?"
     ],
-    principle:"Not all costs are equally cuttable, and the cheapest cut to make is often the most expensive one to have made."
+    principle:"The cheapest option on paper isn't the best if it loses you the market. Weigh cost against speed — and don't forget that being slow has a cost too, even if it doesn't appear on an invoice."
   },
   {
-    title:"Scenario 3 — Build vs Buy on a New Program",
-    text:"There's demand for a new professional program in an emerging field. You can build it in-house (your people, slower, cheaper cash cost, but it ties up capacity you'd otherwise use on existing delivery) or licence content and bring in expert contractors (faster to market, higher cash cost, less IP retained). The window of demand may not stay open long, and a competitor is rumoured to be moving.",
-    prompt:"Discuss and present back: Build, buy, or blend? How do you weigh speed-to-market against cost and IP, and what would tip the decision?",
+    title:"Scenario 3 — The Lamington",
+    text:"Golden Square is an upmarket bakery — $9 croissants, $14 breakfast boards. One exception: a $3 lamington that makes about 40 cents margin. But 71% of lamington buyers also buy a $7 coffee and a $9 croissant. Average transaction for lamington buyers: $14.80. Non-lamington buyers: $6.20. Fiona the CFO wants to raise the price to $7 to align with the premium brand, or cut it entirely.",
+    prompt:"Now frame your recommendation. What would you tell the CFO to do, and why?",
     starters:[
-      "How long is this demand window really likely to stay open?",
-      "What's the cost of being early but expensive, versus late but cheap?",
-      "Could a blend of build and buy work — and what would that look like in practice?",
-      "What's the hidden cost of tying up your team's capacity to build this in-house?"
+      "If you remove the lamington tomorrow and transaction values drop — how long before you notice, and how long before you can reverse the decision?",
+      "If you raise the price to $7 and lamington sales drop by 60% — do you make more money overall or less? Work it out.",
+      "What is the lamington actually doing for Golden Square — and does that job appear anywhere in the financial report?"
     ],
-    principle:"The cheapest option on paper isn't the best if it loses you the market — weigh cost against speed, IP, and opportunity cost together."
+    principle:"Some products earn their keep through what they bring through the door, not the margin on the product itself. Before you cut or reprice a low-margin line, understand what else it's selling."
   },
   {
-    title:"Scenario 4 — The Loss-Leader Program (Lifetime Value)",
-    text:"A new product runs at a slim margin — on its own numbers it barely washes its face. But it's where a large share of learners first encounter RMIT UP, and many go on to enrol in higher-value programs afterward. There's pressure to either lift its price (risking the volume that feeds everything else) or cut it to tidy up the portfolio. Either move looks sensible if you only read this one program's P&L.",
-    prompt:"Discuss and present back: Do you keep it, reprice it, or cut it? How does learner lifetime value change the picture, and what would you need to measure to be confident?",
+    title:"Scenario 4 — The Bowling Alley",
+    text:"Strike Zone bowling alley has had a great year and will finish with a $95,000 surplus. Tonia wants new lane sensors — they work fine but newer ones would be faster ($78,000). Leanne wants a giant inflatable bowling pin for the car park she's wanted for four years ($31,000). The owner wants to hand it back. Any spend not committed by December 15 can't be expensed this financial year.",
+    prompt:"Now frame your recommendation. What would you tell the owner to do, and why?",
     starters:[
-      "What would you need to measure to know if this program is paying off elsewhere?",
-      "What happens to other programs if this one disappears?",
-      "Could repricing cost more in lost volume than it gains per learner?",
-      "Are you judging this program on its own P&L, or on what it feeds into?"
+      "Take the December 15 deadline away for a moment. If this $95,000 appeared in your budget in March and you had to justify spending it — which of the three options would you fund, and which wouldn't make the cut?",
+      "Tonia's sensors still work and Leanne's inflatable pin has been on the wish list for four years. What does that tell you about whether either is actually urgent?",
+      "If you hand the $95,000 back — is that a failure of financial management, or is it exactly what good financial management looks like?"
     ],
-    principle:"Some programs earn their keep through the lifetime value of the learners they bring in, not the margin on the program itself."
+    principle:"Good stewardship looks the same in November as it does in March. You spend because the investment is right — not because the year is closing."
   },
   {
-    title:"Scenario 5 — The Year-End Surplus",
-    text:"Strong demand means your area will finish the year with a $150k surplus. Mitun is pushing you to spend it now on a delivery-platform upgrade that's on the wish-list but not urgent. Tony A wants it for capability training (and lots more team lunches) that would lift quality next year. Josh wants to take it back into improving the result. It's late October and whatever spend you don't commit to by Nov 30 is no longer available.",
-    prompt:"Discuss and present back: Do you spend it, and on what — or hand it back? How do you make sure the decision reads as good stewardship rather than a year-end spend-up?",
+    title:"Scenario 5 — The Petting Zoo",
+    text:"Jake runs a petting zoo on weekends — goats, rabbits, Tony the 94-year-old tortoise, and Mitun the chicken who bites. A rival zoo 4km away just got a llama. Jake's visitor numbers dropped 22%. He's spotted a response: the purple crested yellow beaked whistling Walla Walla, unique to three locations in regional Victoria. Option A: breed one — 14 months, $18,000, he owns it. Option B: buy one from a Shepparton sanctuary — 3 weeks, $47,000, no breeding rights.",
+    prompt:"Now frame your recommendation. What would you tell Jake to do, and why?",
     starters:[
-      "What would this decision look like if the deadline didn't exist?",
-      "Which option has the clearest link to next year's delivery quality?",
-      "Is handing the surplus back actually a loss, or just a clean start?",
-      "How would you explain this decision to someone looking for a year-end spend-up?"
+      "How long will the llama be a competitive threat — and how long before visitors stop caring about it and want to see something new? Does that change whether Jake should move fast or take his time?",
+      "If Jake spends 14 months breeding the Walla Walla while visitors keep going to the llama — what does his visitor number look like by the time the bird is ready?",
+      "Is there a way Jake could move fast now — perhaps buying one bird to launch the attraction — and then build a breeding program once he knows how popular the Walla Walla actually is?"
     ],
-    principle:"Good stewardship looks the same in May as in October — you spend because the investment is right, not because the year is closing."
+    principle:"When a competitor moves, the instinct is to respond fast. But fast and expensive isn't always better than slow and owned — and sometimes the best answer is a blend of both."
   }
 ];
 let currentScenario = 0;
@@ -715,6 +732,24 @@ function score(correct) {
   closeModal();
   advancePick();
 }
+// ── QR MODAL ────────────────────────────────────────────────────────────────
+let qrRendered = false;
+function openQrModal() {
+  if (!qrRendered) {
+    new QRCode(document.getElementById('qrCodeWrap'), {
+      text: 'https://weleadfinance.netlify.app',
+      width: 280,
+      height: 280,
+      colorDark: '#04041a',
+      colorLight: '#ffffff'
+    });
+    qrRendered = true;
+  }
+  document.getElementById('qrModalOverlay').classList.add('open');
+}
+function closeQrModal() {
+  document.getElementById('qrModalOverlay').classList.remove('open');
+}
 function skipQ() {
   if (currentQ) markUsed(currentQ.id);
   closeModal();
@@ -869,6 +904,7 @@ function openScenario(i) {
   badge.style.color = t.uiColor;
   document.getElementById('scTitle').textContent = s.title;
   document.getElementById('scText').textContent = s.text;
+  document.getElementById('scStep2Sub').textContent = s.prompt;
   renderStarterQuestions(i);
   renderThoughts();
   document.getElementById('thoughtInput').value = '';
