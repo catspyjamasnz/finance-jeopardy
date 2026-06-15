@@ -260,7 +260,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
       <div class="activity-btn" onclick="startScenarios()">
         <div class="a-num">ACTIVITY 2</div>
-        <div class="a-title">Show Me The Money!!</div>
+        <div class="a-title">Show Me The Money!!!</div>
         <div class="a-desc">Each team works through a real finance scenario, then presents their thinking back to the room.</div>
       </div>
     </div>
@@ -286,6 +286,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 </div>
 <!-- GAME BOARD -->
 <div id="game" class="screen">
+  <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><span class="crumb-current">Finance Jeopardy</span></div>
   <div class="selection-prompt" id="selectionPrompt"></div>
   <div class="game-header">
     <div class="game-title-wrap">
@@ -320,7 +321,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 <!-- SCENARIOS INTRO -->
 <div id="scenariosIntro" class="screen">
   <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><span class="crumb-current">Show Me The Money</span></div>
-  <div class="logo-title">Show Me The Money!!</div>
+  <div class="logo-title">Show Me The Money!!!</div>
   <div class="logo-sub">Scenario Challenge</div>
   <div class="intro-card">
     <h2>Complete Your Team Scenario</h2>
@@ -386,7 +387,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 <!-- SCENARIOS SUMMARY -->
 <div id="scenariosSummary" class="screen">
   <div class="breadcrumb"><a onclick="showScreen('home')">Home</a><span class="crumb-sep">›</span><a onclick="showScreen('scenariosIntro')">Show Me The Money</a><span class="crumb-sep">›</span><span class="crumb-current">Debrief</span></div>
-  <div class="logo-title">Show Me The Money!!</div>
+  <div class="logo-title">Show Me The Money!!!</div>
   <div class="logo-sub">Debrief — Key Principles</div>
   <div class="rmit-tag">RMIT University</div>
   <div class="intro-card" style="max-width:760px">
@@ -440,11 +441,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 <script>
 // ── RMIT TEAMS ──────────────────────────────────────────────────────────────
 const TEAMS = [
-  { name:'Red',    color:'#E60028', uiColor:'#E60028', textColor:'#fff' },
-  { name:'Blue',   color:'#000054', uiColor:'#7C9BFF', textColor:'#fff' },
-  { name:'Orange', color:'#FC9147', uiColor:'#FC9147', textColor:'#000' },
-  { name:'Teal',   color:'#7AE1AA', uiColor:'#7AE1AA', textColor:'#000' },
-  { name:'Azure',  color:'#00AAFF', uiColor:'#00AAFF', textColor:'#000' },
+  { name:'Team Red',    color:'#E60028', uiColor:'#E60028', textColor:'#fff' },
+  { name:'Team Blue',   color:'#7C9BFF', uiColor:'#7C9BFF', textColor:'#fff' },
+  { name:'Team Orange', color:'#FC9147', uiColor:'#FC9147', textColor:'#000' },
+  { name:'Team Teal',   color:'#7AE1AA', uiColor:'#7AE1AA', textColor:'#000' },
+  { name:'Team Azure',  color:'#00AAFF', uiColor:'#00AAFF', textColor:'#000' },
 ];
 // ── CATEGORIES & CLUES ──────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -506,6 +507,7 @@ const SCENARIOS = [
     title:"Scenario 1 — The Karaoke Bar",
     text:"Neon Pipes karaoke bar runs on Friday and Saturday nights, built entirely around DJ Weak Latte who has 14,000 Instagram followers. This quarter revenue is 20% under target — three corporate bookings cancelled. The owner needs to find savings. DJ Weak Latte costs $800/night. The cocktail menu reprint would save $2,000. The neon sign maintenance is locked in for 12 months. Staff wages are $1,200/night. The Instagram influencer partnership that brought in the corporate bookings costs $600/month.",
     prompt:"Now frame your recommendation. What would you tell the owner to do, and why?",
+    recipient:"the owner",
     starters:[
       "Go through each cost. Which ones can you actually stop right now — and which are already locked in whether you like it or not?",
       "If you cut DJ Weak Latte to save $1,600 a week — what happens to Friday and Saturday night revenue?",
@@ -517,6 +519,7 @@ const SCENARIOS = [
     title:"Scenario 2 — The Cake Shop",
     text:"Batter Up Cake Shop has received 300 unexpected enquiries for Pauline Hanson face cakes. Option A: build — hire a sculptor, 10 weeks, $22,000, you own the mould forever. Option B: buy — licence a mould from a Geelong supplier, ready in 10 days, $14,000 upfront plus $3 per cake royalty, no ownership. A Fitzroy competitor just posted on Instagram hinting at something big involving Clive Palmer.",
     prompt:"Now frame your recommendation. What would you tell the owner to do, and why?",
+    recipient:"the owner",
     starters:[
       "How long do you think the demand for Pauline Hanson face cakes will last — weeks, months, or years? Does your answer change which option you choose?",
       "If the Fitzroy competitor launches in three weeks and you're still training your sculptor — what does that mean for your 300 enquiries?",
@@ -528,6 +531,7 @@ const SCENARIOS = [
     title:"Scenario 3 — The Lamington",
     text:"Golden Square is an upmarket bakery — $9 croissants, $14 breakfast boards. One exception: a $3 lamington that makes about 40 cents margin. But 71% of lamington buyers also buy a $7 coffee and a $9 croissant. Average transaction for lamington buyers: $14.80. Non-lamington buyers: $6.20. Fiona the CFO wants to raise the price to $7 to align with the premium brand, or cut it entirely.",
     prompt:"Now frame your recommendation. What would you tell the CFO to do, and why?",
+    recipient:"the CFO",
     starters:[
       "If you remove the lamington tomorrow and transaction values drop — how long before you notice, and how long before you can reverse the decision?",
       "If you raise the price to $7 and lamington sales drop by 60% — do you make more money overall or less? Work it out.",
@@ -539,6 +543,7 @@ const SCENARIOS = [
     title:"Scenario 4 — The Bowling Alley",
     text:"Strike Zone bowling alley has had a great year and will finish with a $95,000 surplus. Tonia wants new lane sensors — they work fine but newer ones would be faster ($78,000). Leanne wants a giant inflatable bowling pin for the car park she's wanted for four years ($31,000). The owner wants to hand it back. Any spend not committed by December 15 can't be expensed this financial year.",
     prompt:"Now frame your recommendation. What would you tell the owner to do, and why?",
+    recipient:"the owner",
     starters:[
       "Take the December 15 deadline away for a moment. If this $95,000 appeared in your budget in March and you had to justify spending it — which of the three options would you fund, and which wouldn't make the cut?",
       "Tonia's sensors still work and Leanne's inflatable pin has been on the wish list for four years. What does that tell you about whether either is actually urgent?",
@@ -550,6 +555,7 @@ const SCENARIOS = [
     title:"Scenario 5 — The Petting Zoo",
     text:"Jake runs a petting zoo on weekends — goats, rabbits, Tony the 94-year-old tortoise, and Mitun the chicken who bites. A rival zoo 4km away just got a llama. Jake's visitor numbers dropped 22%. He's spotted a response: the purple crested yellow beaked whistling Walla Walla, unique to three locations in regional Victoria. Option A: breed one — 14 months, $18,000, he owns it. Option B: buy one from a Shepparton sanctuary — 3 weeks, $47,000, no breeding rights.",
     prompt:"Now frame your recommendation. What would you tell Jake to do, and why?",
+    recipient:"Jake",
     starters:[
       "How long will the llama be a competitive threat — and how long before visitors stop caring about it and want to see something new? Does that change whether Jake should move fast or take his time?",
       "If Jake spends 14 months breeding the Walla Walla while visitors keep going to the llama — what does his visitor number look like by the time the bird is ready?",
@@ -648,7 +654,7 @@ function renderScoreboard() {
     const dot = document.createElement('div');
     dot.className = 'score-chip-dot'; dot.style.background = t.uiColor;
     const name = document.createElement('span');
-    name.className = 'score-chip-name'; name.textContent = t.name;
+    name.className = 'score-chip-name'; name.textContent = `Team ${t.name}`;
     const val = document.createElement('span');
     val.className = 'score-chip-val'; val.id = `cv-${i}`; val.textContent = `$${scores[i].toLocaleString()}`;
     chip.appendChild(dot); chip.appendChild(name); chip.appendChild(val);
@@ -677,13 +683,13 @@ function updateRoundUI() {
   banner.style.borderColor = t.uiColor + '55';
   banner.style.color = t.uiColor;
   const pickNum = roundPicks.length + 1;
-  banner.innerHTML = `<span style="font-size:22px">●</span>&nbsp;Pick ${pickNum} of 5 &mdash; <strong>${t.name}</strong> chooses`;
+  banner.innerHTML = `<span style="font-size:22px">●</span>&nbsp;Pick ${pickNum} of 5 &mdash; <strong>Team ${t.name}</strong> chooses`;
   // Selection prompt
   const catNames = CATEGORIES.map(c => c.name.replace('\n',' '));
   const exampleCat = catNames[pickerIdx % catNames.length];
   const examplePts = [200,400,600,800,1000][pickerIdx % 5];
   document.getElementById('selectionPrompt').innerHTML =
-    `Say it like this: <strong style="color:${t.uiColor}">"The ${t.name} team will take ${exampleCat} for $${examplePts}, thanks Josh."</strong>`;
+    `Say it like this: <strong style="color:${t.uiColor}">"Team ${t.name} will take ${exampleCat} for $${examplePts}, thanks Josh."</strong>`;
   unlockAll();
 }
 // ── MODAL ───────────────────────────────────────────────────────────────────
@@ -793,7 +799,7 @@ function showRoundSummary() {
     const row = document.createElement('div');
     row.className = 'chart-row';
     row.innerHTML = `
-      <div class="chart-label" style="color:${t.uiColor}">${t.name}</div>
+      <div class="chart-label" style="color:${t.uiColor}">Team ${t.name}</div>
       <div class="chart-bar-track">
         <div class="chart-bar-fill" style="width:0%;background:${t.color}">
           <span class="chart-bar-val" style="color:${t.textColor}">$${scores[i].toLocaleString()}</span>
@@ -854,7 +860,7 @@ function showWinner() {
     row.className = 'chart-row';
     const medal = rank===0?'🥇':rank===1?'🥈':rank===2?'🥉':'';
     row.innerHTML = `
-      <div class="chart-label" style="color:${t.uiColor}">${medal}${t.name}</div>
+      <div class="chart-label" style="color:${t.uiColor}">${medal}Team ${t.name}</div>
       <div class="chart-bar-track">
         <div class="chart-bar-fill" style="width:0%;background:${t.color}">
           <span class="chart-bar-val" style="color:${t.textColor}">$${scores[i].toLocaleString()}</span>
@@ -905,6 +911,7 @@ function openScenario(i) {
   document.getElementById('scTitle').textContent = s.title;
   document.getElementById('scText').textContent = s.text;
   document.getElementById('scStep2Sub').textContent = s.prompt;
+  document.getElementById('recommendationInput').placeholder = `Our recommendation to ${s.recipient} is…`;
   renderStarterQuestions(i);
   renderThoughts();
   document.getElementById('thoughtInput').value = '';
